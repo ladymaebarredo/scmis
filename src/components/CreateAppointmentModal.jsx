@@ -40,7 +40,7 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
         toast.success("Appointment Created Successfully!");
         await createNotification(
           userData.id,
-          workerId,
+          "ZpuoCwWArJcILSanSLLP7jAasuF3", // Nurse ID
           `${userData.lastname} requested an appointment.`,
           { appointmentId: res.message }
         );

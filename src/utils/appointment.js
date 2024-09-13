@@ -2,6 +2,8 @@ import { db } from "./firebase"; // Adjust this import to your Firebase config f
 import {
   collection,
   addDoc,
+  doc,
+  updateDoc,
   getDocs,
   query,
   where,
@@ -58,10 +60,39 @@ export const createAppointment = async (
 // Get all appointments for a specific worker
 export const getAppointments = async (typeId, type) => {
   try {
-    // Query the appointments collection for the specific worker
     const appointmentsQuery = query(
       collection(db, "appointments"),
       where(type, "==", typeId)
+    );
+    const querySnapshot = await getDocs(appointmentsQuery);
+    const appointments = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return appointments;
+  } catch (error) {
+    console.error("Error fetching worker's appointments:", error);
+    return [];
+  }
+};
+
+export const updateStatus = async (id, status) => {
+  try {
+    const ref = doc(db, "appointments", id);
+    await updateDoc(ref, { appointmentStatus: status });
+    console.log("Document updated successfully!");
+  } catch (error) {
+    console.error("Error updating document:", error);
+    throw error;
+  }
+}
+
+export const getPendingAppointments = async () => {
+  try {
+    // Query the appointments collection for the specific worker
+    const appointmentsQuery = query(
+      collection(db, "appointments"),
+      where("appointmentStatus", "==", "Pending")
     );
     // Execute the query
     const querySnapshot = await getDocs(appointmentsQuery);
@@ -76,3 +107,22 @@ export const getAppointments = async (typeId, type) => {
     return [];
   }
 };
+
+export const getApprovedAppointments = async (workerId) => {
+  try {
+    const appointmentsQuery = query(
+      collection(db, "appointments"),
+      where("workerId", "==", workerId),
+      where("appointmentStatus", "==", "Approved"),
+    );
+    const querySnapshot = await getDocs(appointmentsQuery);
+    const appointments = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return appointments;
+  } catch (error) {
+    console.error("Error fetching worker's appointments:", error);
+    return [];
+  }
+}
