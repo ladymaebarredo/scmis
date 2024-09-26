@@ -82,3 +82,24 @@ export const getItems = async () => {
     return [];
   }
 };
+
+export const getMedicines = async () => {
+  try {
+    // Query the appointments collection for the specific worker
+    const inventoryQuery = query(
+      collection(db, "inventory"),
+      where("itemType", "==", "Medicine")
+    );
+    // Execute the query
+    const querySnapshot = await getDocs(inventoryQuery);
+    // Map through the results to format them
+    const inventory = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return inventory;
+  } catch (error) {
+    console.error("Error fetching inventory:", error);
+    return [];
+  }
+}

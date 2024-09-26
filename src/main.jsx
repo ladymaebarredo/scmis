@@ -13,6 +13,7 @@ import AppointmentsPage from "./pages/dashboard/AppointmentsPage";
 import CertificatePage from "./pages/dashboard/CertificatePage";
 import InventoryPage from "./pages/dashboard/InventoryPage";
 import UsersPage from "./pages/dashboard/UsersPage";
+import AppointmentPage from "./pages/dashboard/AppointmentPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -27,6 +28,7 @@ root.render(
           <Route path="profile" element={<ProfilePage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="appointments" element={<AppointmentsPage />} />
+          <Route path="appointments/:id" element={<AppointmentPage />} />
           <Route path="certificate" element={<CertificatePage />} />
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="users" element={<UsersPage />} />

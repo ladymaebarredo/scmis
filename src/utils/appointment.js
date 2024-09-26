@@ -4,6 +4,7 @@ import {
   addDoc,
   doc,
   updateDoc,
+  getDoc,
   getDocs,
   query,
   where,
@@ -85,7 +86,7 @@ export const updateStatus = async (id, status) => {
     console.error("Error updating document:", error);
     throw error;
   }
-}
+};
 
 export const getPendingAppointments = async () => {
   try {
@@ -113,7 +114,7 @@ export const getApprovedAppointments = async (workerId) => {
     const appointmentsQuery = query(
       collection(db, "appointments"),
       where("workerId", "==", workerId),
-      where("appointmentStatus", "==", "Approved"),
+      where("appointmentStatus", "==", "Approved")
     );
     const querySnapshot = await getDocs(appointmentsQuery);
     const appointments = querySnapshot.docs.map((doc) => ({
@@ -125,4 +126,21 @@ export const getApprovedAppointments = async (workerId) => {
     console.error("Error fetching worker's appointments:", error);
     return [];
   }
-}
+};
+
+export const getAppointment = async (appointmentId) => {
+  try {
+    const appointmentDoc = await getDoc(doc(db, "appointments", appointmentId));
+    if (appointmentDoc.exists()) {
+      return {
+        id: appointmentDoc.id,
+        ...appointmentDoc.data(),
+      };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching worker's appointments:", error);
+    return null;
+  }
+};
