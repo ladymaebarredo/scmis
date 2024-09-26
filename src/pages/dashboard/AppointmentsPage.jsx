@@ -17,6 +17,7 @@ import {
   Loader2, // Add loader icon
 } from "lucide-react";
 import { createNotification } from "../../utils/notifications";
+import { Link } from "react-router-dom";
 
 export default function AppointmentsPage() {
   const { user, userData } = useUser();
@@ -264,7 +265,7 @@ const Worker = ({ user, userData }) => {
                 <td className="px-4 py-2">{appointment.appointmentStatus}</td>
                 <td className="px-4 py-2">
                   {appointment.appointmentStatus === "Approved" && (
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                       <button
                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                         onClick={() =>
@@ -281,17 +282,8 @@ const Worker = ({ user, userData }) => {
                       >
                         Cancel
                       </button>
+                      <Link to={appointment.id}>View</Link>
                     </div>
-                  )}
-                  {appointment.appointmentStatus === "Completed" && (
-                    <span className="text-green-600 font-semibold">
-                      Completed
-                    </span>
-                  )}
-                  {appointment.appointmentStatus === "Cancelled" && (
-                    <span className="text-red-600 font-semibold">
-                      Cancelled
-                    </span>
                   )}
                 </td>
               </tr>
