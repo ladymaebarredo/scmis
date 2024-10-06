@@ -3,6 +3,7 @@ import { Mail, User, Calendar, Briefcase, Tag, FileText } from "lucide-react"; /
 import { getUserData, getUser } from "../../utils/user";
 import { useSearchParams } from "react-router-dom";
 import { LoadingPage } from "../LoadingPage";
+import { HealthRecordForm } from "../../components/HealthRecordForm";
 
 export default function ProfilePage() {
   const [searchParams] = useSearchParams();
@@ -17,7 +18,6 @@ export default function ProfilePage() {
     try {
       const data = await getUserData(user.id, user.data.role);
       setUserData(data);
-      console.log(data);
     } catch (error) {
       console.error("Failed to fetch user data:", error);
     }
@@ -45,7 +45,12 @@ export default function ProfilePage() {
   if (!user || !userData) return <>User not Found</>;
   switch (user.data.role) {
     case "STUDENT":
-      return <StudentProfile userData={userData} user={user} />;
+      return (
+        <>
+          <StudentProfile userData={userData} user={user} />
+          <HealthRecordForm profileData={userData} />
+        </>
+      );
     case "EMPLOYEE":
       return <EmployeeProfile userData={userData} user={user} />;
     case "WORKER":
