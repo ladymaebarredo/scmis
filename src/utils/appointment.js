@@ -88,15 +88,13 @@ export const updateStatus = async (id, status) => {
   }
 };
 
-export const getPendingAppointments = async () => {
+export const getAllAppointments = async () => {
   try {
-    // Query the appointments collection for the specific worker
-    const appointmentsQuery = query(
-      collection(db, "appointments"),
-      where("appointmentStatus", "==", "Pending")
-    );
-    // Execute the query
-    const querySnapshot = await getDocs(appointmentsQuery);
+    // Get the reference to the appointments collection
+    const appointmentsCollection = collection(db, "appointments");
+    // Fetch all documents from the appointments collection
+    const querySnapshot = await getDocs(appointmentsCollection);
+
     // Map through the results to format them
     const appointments = querySnapshot.docs.map((doc) => ({
       id: doc.id,
@@ -104,7 +102,7 @@ export const getPendingAppointments = async () => {
     }));
     return appointments;
   } catch (error) {
-    console.error("Error fetching worker's appointments:", error);
+    console.error("Error fetching all appointments:", error);
     return [];
   }
 };

@@ -1,6 +1,6 @@
 export function AppointmentsTable({ appointments }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto mb-10">
       <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
         <thead>
           <tr className="bg-gray-200">
@@ -27,7 +27,7 @@ export function AppointmentsTable({ appointments }) {
                   className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
                     appointment.appointmentStatus === "Pending"
                       ? "text-yellow-800 bg-yellow-200"
-                      : appointment.appointmentStatus === "Confirmed"
+                      : appointment.appointmentStatus === "Approved"
                       ? "text-blue-800 bg-blue-200"
                       : appointment.appointmentStatus === "Completed"
                       ? "text-green-800 bg-green-200"

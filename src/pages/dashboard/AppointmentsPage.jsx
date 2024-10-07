@@ -3,9 +3,8 @@ import { CreateAppointmentModal } from "../../components/CreateAppointmentModal"
 import { useUser } from "../../providers/UserProvider";
 import {
   getAppointments,
-  getApprovedAppointments,
-  getPendingAppointments,
   updateStatus,
+  getAllAppointments,
 } from "../../utils/appointment";
 import { AppointmentCard } from "../../components/AppointmentCard";
 import { AppointmentsTable } from "../../components/AppointmentsTable";
@@ -144,21 +143,20 @@ function Appointee({ user }) {
 const Nurse = ({ user }) => {
   const [appointments, setAppointments] = useState([]);
 
-  // Fetch pending appointments
-  const fetchPending = async () => {
-    const appointments = await getPendingAppointments();
+  // Fetch all appointments
+  const fetchAppointments = async () => {
+    const appointments = await getAllAppointments();
     setAppointments(appointments);
   };
 
   useEffect(() => {
-    fetchPending();
+    fetchAppointments();
   }, []);
 
   // Handle status change
   const handleStatusChange = async (appointment, status) => {
-    console.log(appointment, user.id);
     await updateStatus(appointment.id, status);
-    await fetchPending(); // Refresh appointments after status update
+    await fetchAppointments(); // Refresh appointments after status update
     await createNotification(
       user.id,
       appointment.workerId,
@@ -167,10 +165,24 @@ const Nurse = ({ user }) => {
     );
   };
 
+  // Filter appointments by status
+  const pendingAppointments = appointments.filter(
+    (appointment) => appointment.appointmentStatus === "Pending"
+  );
+  const approvedAppointments = appointments.filter(
+    (appointment) => appointment.appointmentStatus === "Approved"
+  );
+  const completedAppointments = appointments.filter(
+    (appointment) => appointment.appointmentStatus === "Completed"
+  );
+  const declinedAppointments = appointments.filter(
+    (appointment) => appointment.appointmentStatus === "Canceled"
+  );
+
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Pending Appointments</h1>
-      <div className="overflow-x-auto">
+      <h1 className="text-lg font-bold mb-2">Pending Appointments</h1>
+      <div className="overflow-x-auto mb-10">
         <table className="min-w-full table-auto">
           <thead>
             <tr className="bg-gray-200 text-left">
@@ -182,7 +194,7 @@ const Nurse = ({ user }) => {
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment) => (
+            {pendingAppointments.map((appointment) => (
               <tr key={appointment.id} className="bg-white border-b">
                 <td className="px-4 py-2">{appointment.id}</td>
                 <td className="px-4 py-2">{appointment.workerType}</td>
@@ -215,17 +227,29 @@ const Nurse = ({ user }) => {
           </tbody>
         </table>
       </div>
+      <h1 className="text-lg font-bold mb-2">Approved Appointments</h1>
+      <AppointmentsTable appointments={approvedAppointments} />
+      <h1 className="text-lg font-bold mb-2">Completed Appointments</h1>
+      <AppointmentsTable appointments={completedAppointments} />
+      <h1 className="text-lg font-bold mb-2">Canceled Appointments</h1>
+      <AppointmentsTable appointments={declinedAppointments} />
     </div>
   );
 };
 
 const Worker = ({ user, userData }) => {
   const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch approved appointments for the worker
   const fetchAppointments = async () => {
-    const appointments = await getApprovedAppointments(user.id);
-    setAppointments(appointments);
+    try {
+      const response = await getAppointments(user.id, "workerId");
+      setAppointments(response);
+    } catch (error) {
+      console.error("Failed to fetch appointments:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -244,9 +268,69 @@ const Worker = ({ user, userData }) => {
     );
   };
 
+  // Filter appointments based on status
+  const approvedAppointments = appointments.filter(
+    (appointment) => appointment.appointmentStatus === "Approved"
+  );
+  const completedAppointments = appointments.filter(
+    (appointment) => appointment.appointmentStatus === "Completed"
+  );
+
+  if (loading) {
+    return <div>Loading...</div>; // Add a loading state
+  }
+
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Approved Appointments</h1>
+      <h1 className="text-2xl font-bold mb-4">Appointments</h1>
+
+      {/* Approved Appointments */}
+      <h2 className="text-xl font-semibold mb-2">Approved Appointments</h2>
+      <div className="overflow-x-auto mb-6">
+        <table className="min-w-full table-auto">
+          <thead>
+            <tr className="bg-gray-200 text-left">
+              <th className="px-4 py-2">ID</th>
+              <th className="px-4 py-2">Message</th>
+              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {approvedAppointments.map((appointment) => (
+              <tr key={appointment.id} className="bg-white border-b">
+                <td className="px-4 py-2">{appointment.id}</td>
+                <td className="px-4 py-2">{appointment.message}</td>
+                <td className="px-4 py-2">{appointment.appointmentStatus}</td>
+                <td className="px-4 py-2">
+                  <div className="flex gap-2 items-center">
+                    <button
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      onClick={() =>
+                        handleStatusChange(appointment, "Completed")
+                      }
+                    >
+                      Mark as Completed
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                      onClick={() =>
+                        handleStatusChange(appointment, "Cancelled")
+                      }
+                    >
+                      Cancel
+                    </button>
+                    <Link to={appointment.id}>View</Link>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Completed Appointments */}
+      <h2 className="text-xl font-semibold mb-2">Completed Appointments</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
           <thead>
@@ -258,33 +342,13 @@ const Worker = ({ user, userData }) => {
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment) => (
+            {completedAppointments.map((appointment) => (
               <tr key={appointment.id} className="bg-white border-b">
                 <td className="px-4 py-2">{appointment.id}</td>
                 <td className="px-4 py-2">{appointment.message}</td>
                 <td className="px-4 py-2">{appointment.appointmentStatus}</td>
                 <td className="px-4 py-2">
-                  {appointment.appointmentStatus === "Approved" && (
-                    <div className="flex gap-2 items-center">
-                      <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        onClick={() =>
-                          handleStatusChange(appointment, "Completed")
-                        }
-                      >
-                        Mark as Completed
-                      </button>
-                      <button
-                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        onClick={() =>
-                          handleStatusChange(appointment, "Cancelled")
-                        }
-                      >
-                        Cancel
-                      </button>
-                      <Link to={appointment.id}>View</Link>
-                    </div>
-                  )}
+                  <Link to={appointment.id}>View</Link>
                 </td>
               </tr>
             ))}

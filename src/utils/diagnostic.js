@@ -5,47 +5,45 @@ import {
   doc,
   updateDoc,
   getDoc,
+  setDoc,
   getDocs,
   query,
   where,
   serverTimestamp,
 } from "firebase/firestore";
 
-export const createDiagnostic = async (appointmentId, message, medicines) => {
+export const assignDiagnostic = async (appointmentId, message, medicines) => {
   try {
-    await addDoc(collection(db, "diagnostics"), {
+    // Create a reference to the document
+    const docRef = doc(db, "diagnostics", appointmentId);
+    await setDoc(docRef, {
       appointmentId,
       message,
       medicines,
       createdAt: serverTimestamp(),
     });
+    console.log("Document successfully created/updated!");
   } catch (error) {
-    console.error("Error creating appointment:", error);
-    return {
-      success: false,
-      message: "An error occurred while creating the diagnostic.",
-    };
+    console.error("Error writing document: ", error);
   }
 };
 
 export const getDiagnostic = async (appointmentId) => {
   try {
-    const diagnosticQuery = query(
-      collection(db, "diagnostics"),
-      where("appointmentId", "==", appointmentId)
-    );
-    const querySnapshot = await getDocs(diagnosticQuery);
-    if (!querySnapshot.empty) {
-      const diagnosticDoc = querySnapshot.docs[0];
-      return {
-        message: diagnosticDoc.data().message,
-        medicines: diagnosticDoc.data().medicines,
-      };
+    // Create a reference to the document
+    const docRef = doc(db, "diagnostics", appointmentId);
+    // Get the document snapshot
+    const docSnap = await getDoc(docRef);
+    // Check if the document exists
+    if (docSnap.exists()) {
+      // Return the document data
+      return docSnap.data();
     } else {
-      return null; // Return null if no document matches
+      console.log("No such diagnostic!");
+      return null;
     }
   } catch (error) {
-    console.error("Error fetching diagnostic:", error);
-    return null;
+    console.error("Error fetching diagnostic: ", error);
+    throw error; // Propagate the error for further handling if necessary
   }
 };

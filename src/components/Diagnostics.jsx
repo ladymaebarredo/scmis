@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMedicines } from "../utils/inventory";
-import { getDiagnostic } from "../utils/diagnostic"; // Ensure this is correctly imported
+import { assignDiagnostic, getDiagnostic } from "../utils/diagnostic"; // Ensure this is correctly imported
 
 export function Diagnostics({ appointmentId }) {
   const [medicines, setMedicines] = useState([]);
@@ -63,8 +63,14 @@ export function Diagnostics({ appointmentId }) {
     }));
   };
 
-  const handleSave = () => {
-    // Implement save functionality (e.g., send data to an API)
+  const handleSave = async () => {
+    try {
+      await assignDiagnostic(
+        appointmentId,
+        diagnostic.message,
+        diagnostic.medicines
+      );
+    } catch (error) {}
     console.log("Saving diagnostic data:", diagnostic);
   };
 
