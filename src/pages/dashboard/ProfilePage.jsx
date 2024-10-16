@@ -4,6 +4,7 @@ import { getUserData, getUser } from "../../utils/user";
 import { useSearchParams } from "react-router-dom";
 import { LoadingPage } from "../LoadingPage";
 import { HealthRecordForm } from "../../components/HealthRecordForm";
+import { AvailabilityForm } from "../../components/AvailabilityForm";
 
 export default function ProfilePage() {
   const [searchParams] = useSearchParams();
@@ -280,6 +281,8 @@ function WorkerProfile({ userData, user }) {
           </div>
         </div>
       </div>
+
+      <AvailabilityForm />
     </div>
   );
 }

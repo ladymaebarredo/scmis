@@ -163,20 +163,17 @@ const Nurse = ({ user }) => {
       `Nurse ${status} an appointment for you.`,
       { appointmentId: appointment.id }
     );
+    await createNotification(
+      user.id,
+      appointment.userId,
+      `Nurse ${status} your appointment.`,
+      { appointmentId: appointment.id }
+    );
   };
 
   // Filter appointments by status
   const pendingAppointments = appointments.filter(
     (appointment) => appointment.appointmentStatus === "Pending"
-  );
-  const approvedAppointments = appointments.filter(
-    (appointment) => appointment.appointmentStatus === "Approved"
-  );
-  const completedAppointments = appointments.filter(
-    (appointment) => appointment.appointmentStatus === "Completed"
-  );
-  const declinedAppointments = appointments.filter(
-    (appointment) => appointment.appointmentStatus === "Canceled"
   );
 
   return (
@@ -227,12 +224,8 @@ const Nurse = ({ user }) => {
           </tbody>
         </table>
       </div>
-      <h1 className="text-lg font-bold mb-2">Approved Appointments</h1>
-      <AppointmentsTable appointments={approvedAppointments} />
-      <h1 className="text-lg font-bold mb-2">Completed Appointments</h1>
-      <AppointmentsTable appointments={completedAppointments} />
-      <h1 className="text-lg font-bold mb-2">Canceled Appointments</h1>
-      <AppointmentsTable appointments={declinedAppointments} />
+      <h1 className="text-lg font-bold mb-2">All Appointments</h1>
+      <AppointmentsTable appointments={appointments} />
     </div>
   );
 };
@@ -271,9 +264,6 @@ const Worker = ({ user, userData }) => {
   // Filter appointments based on status
   const approvedAppointments = appointments.filter(
     (appointment) => appointment.appointmentStatus === "Approved"
-  );
-  const completedAppointments = appointments.filter(
-    (appointment) => appointment.appointmentStatus === "Completed"
   );
 
   if (loading) {
@@ -329,32 +319,8 @@ const Worker = ({ user, userData }) => {
         </table>
       </div>
 
-      {/* Completed Appointments */}
-      <h2 className="text-xl font-semibold mb-2">Completed Appointments</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-gray-200 text-left">
-              <th className="px-4 py-2">ID</th>
-              <th className="px-4 py-2">Message</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {completedAppointments.map((appointment) => (
-              <tr key={appointment.id} className="bg-white border-b">
-                <td className="px-4 py-2">{appointment.id}</td>
-                <td className="px-4 py-2">{appointment.message}</td>
-                <td className="px-4 py-2">{appointment.appointmentStatus}</td>
-                <td className="px-4 py-2">
-                  <Link to={appointment.id}>View</Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <h2 className="text-xl font-semibold mb-2">Appointments</h2>
+      <AppointmentsTable appointments={appointments} />
     </div>
   );
 };

@@ -4,15 +4,17 @@ import { getWorkersByType } from "../utils/worker";
 import { createAppointment } from "../utils/appointment";
 import toast from "react-hot-toast";
 import { createNotification } from "../utils/notifications";
+import { getAvailability } from "../utils/availability";
 
 export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
   const [workers, setWorkers] = useState([]);
-
   const [workerId, setWorkerId] = useState("");
   const [message, setMessage] = useState("");
-
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [availability, setAvailability] = useState(null);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
 
   const { userData } = useUser();
 
@@ -22,7 +24,19 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
       setWorkers(workers);
     };
     fetchWorkers();
-  }, []);
+  }, [workerType]);
+
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      if (workerId) {
+        const availability = await getAvailability(workerId);
+        setAvailability(availability);
+      } else {
+        setAvailability(null); // Reset availability if no worker is selected
+      }
+    };
+    fetchAvailability();
+  }, [workerId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +46,9 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
         workerType,
         workerId,
         message,
-        userData.id
+        userData.id,
+        selectedDate,
+        selectedTime // Include the selected date and time
       );
       if (res.success) {
         revalidate();
@@ -54,6 +70,7 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
       setLoading(false);
     }
   };
+
   return (
     <main className="z-50 p-5 fixed top-0 left-0 h-screen w-full bg-black/70 flex justify-center items-center">
       <form
@@ -61,6 +78,7 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
         className="flex flex-col gap-4 bg-white rounded-lg p-10 md:w-[700px] w-full"
       >
         <h1 className="font-semibold">Create {workerType} Appointment</h1>
+
         <section className="flex flex-col">
           <label htmlFor="workerId" className="text-gray-500">
             {workerType}
@@ -80,6 +98,47 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
             ))}
           </select>
         </section>
+
+        {availability && (
+          <section className="flex flex-col">
+            <h2 className="text-gray-500">Availability:</h2>
+            <div>
+              {Object.entries(availability).map(([day, times]) => (
+                <div key={day}>
+                  <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong>{" "}
+                  {times.from} - {times.to}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="flex flex-col">
+          <label htmlFor="date" className="text-gray-500">
+            Select Date:
+          </label>
+          <input
+            type="date"
+            id="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="p-2 border-2"
+            required // Make this field required
+          />
+
+          <label htmlFor="time" className="text-gray-500">
+            Select Time:
+          </label>
+          <input
+            type="time"
+            id="time"
+            value={selectedTime}
+            onChange={(e) => setSelectedTime(e.target.value)}
+            className="p-2 border-2"
+            required // Make this field required
+          />
+        </section>
+
         <section className="flex flex-col">
           <label htmlFor="message" className="text-gray-500">
             Message
@@ -93,6 +152,7 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
             placeholder={`${userData.firstname}'s reason for appointment.`}
           ></textarea>
         </section>
+
         <section className="flex items-center justify-end gap-2">
           <button
             onClick={onClose}
@@ -103,12 +163,13 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
           </button>
           <button
             className="bg-red-950 text-white p-2 rounded-lg"
-            disabled={loading}
+            disabled={loading || !workerId || !selectedDate || !selectedTime}
           >
             {loading ? "Creating Appointment..." : "Create Appointment"}
           </button>
         </section>
-        {error && <p>{error}</p>}
+
+        {error && <p className="text-red-500">{error}</p>}
       </form>
     </main>
   );

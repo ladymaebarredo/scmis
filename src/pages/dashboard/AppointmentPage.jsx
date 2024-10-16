@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getAppointment } from "../../utils/appointment";
 import { LoadingPage } from "../LoadingPage";
 import { Diagnostics } from "../../components/Diagnostics";
@@ -43,8 +43,14 @@ export default function AppointmentPage() {
         <div className="mb-4">
           <span className="font-semibold">Message:</span> {appointment.message}
         </div>
-        <div className="mb-4">
+        <div className="mb-4 flex flex-col">
           <span className="font-semibold">User ID:</span> {appointment.userId}
+          <Link
+            to={`/dashboard/profile?id=${appointment.userId}`}
+            className=" underline text-blue-600"
+          >
+            View Profile
+          </Link>
         </div>
         <div className="mb-4">
           <span className="font-semibold">Worker ID:</span>{" "}
