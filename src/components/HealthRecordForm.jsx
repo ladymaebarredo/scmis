@@ -43,7 +43,7 @@ export const HealthRecordForm = () => {
   if (loading) return <LoadingPage />;
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-md">
+    <div className="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-md" id="record">
       <h1 className="text-2xl font-bold mb-6 text-center">
         Individual Health Record
       </h1>

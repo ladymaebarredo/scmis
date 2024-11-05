@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { adminLinks, links } from "../utils/globals";
+import {  appointeelinks, nurseLinks, workerLinks } from "../utils/globals";
 import { UserButton } from "./UserButton";
 import { SignoutButton } from "./SignoutButton";
 import {
@@ -14,7 +14,25 @@ import { useUser } from "../providers/UserProvider";
 export function SideBar() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const { user, notifications } = useUser();
+  const { user, userData, notifications } = useUser();
+
+  let slinks;
+  
+  switch(user.data.role) {
+    case "WORKER":
+      if(userData.workerType == "Nurse") {
+        slinks = nurseLinks
+      } else {
+        slinks = workerLinks
+      }
+      break;
+    case "STUDENT":
+      slinks = appointeelinks
+      break;
+    case "EMPLOYEE":
+      slinks = appointeelinks
+      break;
+  }
 
   const unreadCount = notifications.filter(
     (notification) => !notification.viewed
@@ -49,7 +67,7 @@ export function SideBar() {
           <h1 className="text-2xl font-bold">SCMIS</h1>
         </div>
         <div className="flex flex-col">
-          {links.map((link, i) => (
+          {slinks.map((link, i) => (
             <div className="p-2" key={i}>
               <Link
                 to={link.href}
@@ -96,25 +114,6 @@ export function SideBar() {
             </Link>
           </div>
         </div>
-        {user.data.role == "WORKER" && (
-          <div className="flex flex-col">
-            {adminLinks.map((link, i) => (
-              <div className="p-2" key={i}>
-                <Link
-                  to={link.href}
-                  className={`hover:bg-white hover:text-red-950 transition-all flex gap-3 p-2 rounded-full ${
-                    location.pathname == link.href
-                      ? "font-bold"
-                      : "text-white/80"
-                  }`}
-                >
-                  <link.icon />
-                  <p>{link.tag}</p>
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
         <div className="mt-auto p-5 flex flex-col gap-4">
           <UserButton />
           <SignoutButton />

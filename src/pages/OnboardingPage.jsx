@@ -25,6 +25,7 @@ function EmployeeOnboardingForm({ user }) {
   const [employeeType, setEmployeeType] = useState("");
   const [assignment, setAssignment] = useState("");
   const [employeeId, setEmployeeId] = useState("");
+  const [isDean, setIsDean] = useState(false);  // New state for the checkbox
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -32,8 +33,7 @@ function EmployeeOnboardingForm({ user }) {
   const handleEmployeeTypeChange = (e) => {
     const type = e.target.value;
     setEmployeeType(type);
-    setDepartment("");
-    setOffice("");
+    setAssignment("");  // Reset assignment when employee type changes
   };
 
   const handleSubmit = async (e) => {
@@ -48,16 +48,19 @@ function EmployeeOnboardingForm({ user }) {
         employeeId,
         employeeType,
         assignment,
-        user.id
+        user.id,
+        isDean // Include isDean in the submission
       );
       if (res.success) {
-        // Handle successful login, e.g., navigate to the dashboard
+        // Handle successful submission, e.g., navigate to the dashboard
         window.location.reload();
       } else {
         // Handle errors and update state
         setError(res.message);
       }
     } catch (error) {
+      setError("An error occurred during submission.");
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -70,10 +73,10 @@ function EmployeeOnboardingForm({ user }) {
         onSubmit={handleSubmit}
       >
         <h1 className="text-lg font-semibold mb-5">Employee Onboarding</h1>
+        
+        {/* First Name */}
         <section className="flex flex-col">
-          <label htmlFor="firstname" className="text-gray-500">
-            Firstname
-          </label>
+          <label htmlFor="firstname" className="text-gray-500">Firstname</label>
           <input
             required
             type="text"
@@ -85,10 +88,10 @@ function EmployeeOnboardingForm({ user }) {
             onChange={(e) => setFirstname(e.target.value)}
           />
         </section>
+
+        {/* Middle Name */}
         <section className="flex flex-col">
-          <label htmlFor="middlename" className="text-gray-500">
-            Middlename
-          </label>
+          <label htmlFor="middlename" className="text-gray-500">Middlename</label>
           <input
             required
             type="text"
@@ -100,10 +103,10 @@ function EmployeeOnboardingForm({ user }) {
             onChange={(e) => setMiddlename(e.target.value)}
           />
         </section>
+
+        {/* Last Name */}
         <section className="flex flex-col">
-          <label htmlFor="lastname" className="text-gray-500">
-            Lastname
-          </label>
+          <label htmlFor="lastname" className="text-gray-500">Lastname</label>
           <input
             required
             type="text"
@@ -115,10 +118,10 @@ function EmployeeOnboardingForm({ user }) {
             onChange={(e) => setLastname(e.target.value)}
           />
         </section>
+
+        {/* Employee ID */}
         <section className="flex flex-col">
-          <label htmlFor="employeeId" className="text-gray-500">
-            Employee ID
-          </label>
+          <label htmlFor="employeeId" className="text-gray-500">Employee ID</label>
           <input
             required
             type="text"
@@ -130,10 +133,10 @@ function EmployeeOnboardingForm({ user }) {
             onChange={(e) => setEmployeeId(e.target.value)}
           />
         </section>
+
+        {/* Employee Type */}
         <section className="flex flex-col">
-          <label htmlFor="employeeType" className="text-gray-500">
-            Employee Type
-          </label>
+          <label htmlFor="employeeType" className="text-gray-500">Employee Type</label>
           <select
             id="employeeType"
             name="employeeType"
@@ -146,32 +149,45 @@ function EmployeeOnboardingForm({ user }) {
             <option value="non-teaching">Non-Teaching</option>
           </select>
         </section>
+
+        {/* If Employee Type is Teaching, show the isDean checkbox */}
         {employeeType === "teaching" && (
-          <section className="flex flex-col">
-            <label htmlFor="assignment" className="text-gray-500">
-              Department
-            </label>
-            <select
-              id="assignment"
-              name="assignment"
-              className="p-2"
-              value={assignment}
-              onChange={(e) => setAssignment(e.target.value)}
-            >
-              <option value="">Select Department</option>
-              {departments.map((dept) => (
-                <option key={dept.shortname} value={dept.shortname}>
-                  {dept.name}
-                </option>
-              ))}
-            </select>
-          </section>
+          <>
+            <section className="flex gap-4">
+              <label htmlFor="isDean" className="text-gray-500">Dean</label>
+              <input
+                type="checkbox"
+                id="isDean"
+                name="isDean"
+                checked={isDean}
+                onChange={(e) => setIsDean(e.target.checked)}
+              />
+            </section>
+
+            <section className="flex flex-col">
+              <label htmlFor="assignment" className="text-gray-500">Department</label>
+              <select
+                id="assignment"
+                name="assignment"
+                className="p-2"
+                value={assignment}
+                onChange={(e) => setAssignment(e.target.value)}
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.shortname} value={dept.shortname}>
+                    {dept.name}
+                  </option>
+                ))}
+              </select>
+            </section>
+          </>
         )}
+
+        {/* If Employee Type is Non-Teaching, show office assignment */}
         {employeeType === "non-teaching" && (
           <section className="flex flex-col">
-            <label htmlFor="assignment" className="text-gray-500">
-              Office
-            </label>
+            <label htmlFor="assignment" className="text-gray-500">Office</label>
             <select
               id="assignment"
               name="assignment"
@@ -188,6 +204,8 @@ function EmployeeOnboardingForm({ user }) {
             </select>
           </section>
         )}
+
+        {/* Submit button */}
         <section className="flex items-center justify-end">
           <button
             type="submit"
@@ -197,6 +215,8 @@ function EmployeeOnboardingForm({ user }) {
             {loading ? "Submitting..." : "Submit"}
           </button>
         </section>
+
+        {/* Error message */}
         {error && <p className="text-red-400 mt-2">{error}</p>}
       </form>
     </main>

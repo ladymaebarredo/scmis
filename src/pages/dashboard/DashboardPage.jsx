@@ -9,6 +9,9 @@ import {
 export default function DashboardPage() {
   const { user, userData } = useUser();
 
+  console.log(userData);
+  
+
   return (
     <main className="p-10">
       <h1 className="text-3xl font-semibold text-gray-800 flex items-center space-x-2">

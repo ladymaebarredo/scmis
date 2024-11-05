@@ -14,6 +14,25 @@ export const links = [
   { tag: "Certificate", href: "/dashboard/certificate", icon: Paperclip },
 ];
 
+export const appointeelinks = [
+  { tag: "Dashboard", href: "/dashboard", icon: ChartAreaIcon },
+  { tag: "Appointments", href: "/dashboard/appointments", icon: BookAIcon },
+  { tag: "Certificate", href: "/dashboard/certificate", icon: Paperclip },
+]
+
+export const nurseLinks = [
+  { tag: "Dashboard", href: "/dashboard", icon: ChartAreaIcon },
+  { tag: "Appointments", href: "/dashboard/appointments", icon: BookAIcon },
+  { tag: "Certificate", href: "/dashboard/certificate", icon: Paperclip },
+  { tag: "Inventory", href: "/dashboard/inventory", icon: BaggageClaimIcon },
+  { tag: "Users", href: "/dashboard/users", icon: Users2Icon },
+]
+
+export const workerLinks = [
+  { tag: "Dashboard", href: "/dashboard", icon: ChartAreaIcon },
+  { tag: "Appointments", href: "/dashboard/appointments", icon: BookAIcon },
+];
+
 export const adminLinks = [
   { tag: "Inventory", href: "/dashboard/inventory", icon: BaggageClaimIcon },
   { tag: "Users", href: "/dashboard/users", icon: Users2Icon },

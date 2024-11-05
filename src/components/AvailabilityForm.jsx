@@ -71,6 +71,11 @@ export const AvailabilityForm = () => {
 
   if (loading) return <LoadingPage />;
 
+  // Array of days of the week
+  const daysOfWeek = [
+    "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+  ];
+
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-md">
       <h1 className="text-2xl font-bold mb-6 text-center">Availability Form</h1>
@@ -78,71 +83,38 @@ export const AvailabilityForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        {/* Monday */}
-        <div>
-          <label className="flex items-center mt-4">
-            <input
-              type="checkbox"
-              onChange={() => handleDaySelection("monday")}
-              checked={selectedDays.monday}
-            />
-            <span className="ml-2">Monday</span>
-          </label>
-          {selectedDays.monday && (
-            <div className="grid grid-cols-2 gap-4 mt-2">
-              <div>
-                <label className="block mb-2">From</label>
-                <input
-                  type="time"
-                  {...register("monday.from")}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
+        {daysOfWeek.map((day) => (
+          <div key={day}>
+            <label className="flex items-center mt-4">
+              <input
+                type="checkbox"
+                onChange={() => handleDaySelection(day)}
+                checked={selectedDays[day]}
+              />
+              <span className="ml-2 capitalize">{day}</span>
+            </label>
+            {selectedDays[day] && (
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                  <label className="block mb-2">From</label>
+                  <input
+                    type="time"
+                    {...register(`${day}.from`)}
+                    className="w-full p-2 border border-gray-300 rounded"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-2">To</label>
+                  <input
+                    type="time"
+                    {...register(`${day}.to`)}
+                    className="w-full p-2 border border-gray-300 rounded"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block mb-2">To</label>
-                <input
-                  type="time"
-                  {...register("monday.to")}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Tuesday */}
-        <div>
-          <label className="flex items-center mt-4">
-            <input
-              type="checkbox"
-              onChange={() => handleDaySelection("tuesday")}
-              checked={selectedDays.tuesday}
-            />
-            <span className="ml-2">Tuesday</span>
-          </label>
-          {selectedDays.tuesday && (
-            <div className="grid grid-cols-2 gap-4 mt-2">
-              <div>
-                <label className="block mb-2">From</label>
-                <input
-                  type="time"
-                  {...register("tuesday.from")}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
-              <div>
-                <label className="block mb-2">To</label>
-                <input
-                  type="time"
-                  {...register("tuesday.to")}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Similarly add for other days... */}
+            )}
+          </div>
+        ))}
 
         {/* Submit button for editing */}
         {isOwner && (

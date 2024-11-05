@@ -8,7 +8,8 @@ export const createEmployee = async (
   employeeId,
   employeeType,
   assignment,
-  id
+  id,
+  isDean
 ) => {
   try {
     await setDoc(doc(db, "employees", id), {
@@ -19,6 +20,7 @@ export const createEmployee = async (
       employeeId,
       employeeType,
       assignment,
+      isDean,
     });
     await updateDoc(doc(db, "users", id), {
       onboarded: true,

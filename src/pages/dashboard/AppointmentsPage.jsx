@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CreateAppointmentModal } from "../../components/CreateAppointmentModal";
 import { useUser } from "../../providers/UserProvider";
+import { useNavigate } from 'react-router-dom';
 import {
   getAppointments,
   updateStatus,
@@ -17,9 +18,41 @@ import {
 } from "lucide-react";
 import { createNotification } from "../../utils/notifications";
 import { Link } from "react-router-dom";
+import { getRecord } from "../../utils/record";
+import { LoadingPage } from "../LoadingPage";
 
 export default function AppointmentsPage() {
-  const { user, userData } = useUser();
+  const { user, userData, loading } = useUser();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate(); // Hook for navigation
+
+  if(loading) return <LoadingPage />
+
+  // Fetch the student record if the user is a STUDENT
+  useEffect(() => {
+    if (user.data.role === "STUDENT") {
+      const fetchRecord = async () => {
+        setIsLoading(true);
+        try {
+          const record = await getRecord(userData.id); // Assuming `user.uid` is the unique ID
+          if (!record) {
+            console.log(userData);
+            navigate(`/dashboard/profile?id=${userData.id}#record`); // Adjust the URL as per your routing setup
+          }
+        } catch (err) {
+          console.error("Error fetching record:", err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchRecord();
+    }
+  }, [user.data.role, user.uid, navigate]); // Effect runs when role or user changes
+
+  if(isLoading) return <LoadingPage />
+
   if (user.data.role == "WORKER") {
     if (userData.workerType == "Nurse") {
       return <Nurse user={user} />;
