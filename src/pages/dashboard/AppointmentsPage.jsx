@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CreateAppointmentModal } from "../../components/CreateAppointmentModal";
 import { useUser } from "../../providers/UserProvider";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import {
   getAppointments,
   updateStatus,
@@ -27,7 +27,7 @@ export default function AppointmentsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate(); // Hook for navigation
 
-  if(loading) return <LoadingPage />
+  if (loading) return <LoadingPage />;
 
   // Fetch the student record if the user is a STUDENT
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function AppointmentsPage() {
     }
   }, [user.data.role, user.uid, navigate]); // Effect runs when role or user changes
 
-  if(isLoading) return <LoadingPage />
+  if (isLoading) return <LoadingPage />;
 
   if (user.data.role == "WORKER") {
     if (userData.workerType == "Nurse") {
@@ -288,7 +288,7 @@ const Worker = ({ user, userData }) => {
     await fetchAppointments(); // Refresh appointments after status update
     await createNotification(
       user.id,
-      "ZpuoCwWArJcILSanSLLP7jAasuF3", // Nurse ID
+      "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
       `${userData.workerType} ${status} an appointment.`,
       { appointmentId: appointment.id }
     );
@@ -306,8 +306,6 @@ const Worker = ({ user, userData }) => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Appointments</h1>
-
-      {/* Approved Appointments */}
       <h2 className="text-xl font-semibold mb-2">Approved Appointments</h2>
       <div className="overflow-x-auto mb-6">
         <table className="min-w-full table-auto">

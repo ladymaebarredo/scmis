@@ -8,6 +8,7 @@ import {
   collection,
   query,
   where,
+  limit,
 } from "firebase/firestore";
 
 export const createWorker = async (
@@ -36,16 +37,24 @@ export const createWorker = async (
   }
 };
 
-export const getWorkersByType = async (workerType) => {
+export const getWorkerByType = async (workerType) => {
   try {
     const q = query(
       collection(db, "workers"),
-      where("workerType", "==", workerType)
+      where("workerType", "==", workerType),
+      limit(1) // Limit the query to only return one document
     );
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    // Return the first worker (if available)
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0]; // Get the first document
+      return { id: doc.id, ...doc.data() }; // Return the worker's data
+    } else {
+      return null; // Return null if no worker is found
+    }
   } catch (error) {
-    console.error("Error fetching workers:", error);
-    return [];
+    console.error("Error fetching worker:", error);
+    return null; // Return null if an error occurs
   }
 };

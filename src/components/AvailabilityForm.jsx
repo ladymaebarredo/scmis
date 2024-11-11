@@ -7,7 +7,7 @@ import { LoadingPage } from "../pages/LoadingPage";
 
 export const AvailabilityForm = () => {
   const { userData } = useUser();
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, setValue } = useForm();
   const [availability, setAvailability] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedDays, setSelectedDays] = useState({
@@ -54,13 +54,20 @@ export const AvailabilityForm = () => {
   }, []);
 
   const handleDaySelection = (day) => {
-    setSelectedDays((prev) => ({
-      ...prev,
-      [day]: !prev[day],
-    }));
+    setSelectedDays((prev) => {
+      const isDaySelected = !prev[day];
+      if (!isDaySelected) {
+        // If unchecked, clear the from/to fields for this day
+        setValue(`${day}.from`, "");
+        setValue(`${day}.to`, "");
+      }
+      return { ...prev, [day]: isDaySelected };
+    });
   };
 
   const onSubmit = async (data) => {
+    console.log(data);
+
     try {
       await assignAvailability(data, userData.id);
       fetchAvailability(); // Fetch again to update the form
@@ -73,7 +80,13 @@ export const AvailabilityForm = () => {
 
   // Array of days of the week
   const daysOfWeek = [
-    "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
   ];
 
   return (

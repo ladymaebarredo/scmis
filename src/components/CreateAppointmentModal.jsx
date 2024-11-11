@@ -1,176 +1,253 @@
-import { useEffect, useState } from "react";
 import { useUser } from "../providers/UserProvider";
-import { getWorkersByType } from "../utils/worker";
+import { useEffect, useState } from "react";
 import { createAppointment } from "../utils/appointment";
-import toast from "react-hot-toast";
-import { createNotification } from "../utils/notifications";
+import { getWorkerByType } from "../utils/worker";
 import { getAvailability } from "../utils/availability";
+import { addDays, startOfWeek, format, subWeeks } from "date-fns";
+import { createNotification } from "../utils/notifications";
 
 export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
-  const [workers, setWorkers] = useState([]);
-  const [workerId, setWorkerId] = useState("");
+  const { userData } = useUser();
+
+  const [worker, setWorker] = useState(null);
+  const [availability, setAvailability] = useState(null);
+  const [currentWeekStart, setCurrentWeekStart] = useState(
+    startOfWeek(new Date())
+  );
+  const [selectedDay, setSelectedDay] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [availability, setAvailability] = useState(null);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
-
-  const { userData } = useUser();
 
   useEffect(() => {
-    const fetchWorkers = async () => {
-      const workers = await getWorkersByType(workerType);
-      setWorkers(workers);
+    const fetchWorker = async () => {
+      const worker = await getWorkerByType(workerType);
+      setWorker(worker);
     };
-    fetchWorkers();
+
+    fetchWorker();
   }, [workerType]);
 
   useEffect(() => {
-    const fetchAvailability = async () => {
-      if (workerId) {
-        const availability = await getAvailability(workerId);
-        setAvailability(availability);
-      } else {
-        setAvailability(null); // Reset availability if no worker is selected
-      }
-    };
-    fetchAvailability();
-  }, [workerId]);
+    if (!worker) return;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const fetchAvailability = async () => {
+      const availability = await getAvailability(worker.id);
+      setAvailability(availability);
+    };
+
+    fetchAvailability();
+  }, [worker]);
+
+  const getWeekDays = () => {
+    let days = [];
+    for (let i = 0; i < 7; i++) {
+      days.push(addDays(currentWeekStart, i));
+    }
+    return days;
+  };
+
+  const goToNextWeek = () => {
+    setCurrentWeekStart(addDays(currentWeekStart, 7));
+  };
+
+  const goToPreviousWeek = () => {
+    const prevWeek = subWeeks(currentWeekStart, 1);
+    if (prevWeek >= startOfWeek(new Date())) {
+      setCurrentWeekStart(prevWeek);
+    }
+  };
+
+  const handleDaySelect = (event) => {
+    const selected = event.target.value;
+    setSelectedDay(selected);
+    const selectedDayDate = getWeekDays().find(
+      (day) => format(day, "iiii") === selected
+    );
+    if (selectedDayDate) {
+      setSelectedDate(format(selectedDayDate, "yyyy-MM-dd")); // Set selectedDate as a formatted string
+    }
+    const availabilityForDay = availability[selected.toLowerCase()];
+    if (availabilityForDay) {
+      setSelectedTime(availabilityForDay.from); // Default to the start time of the selected day
+    }
+  };
+
+  const handleTimeChange = (event) => {
+    setSelectedTime(event.target.value);
+  };
+
+  const handleMessageChange = (event) => {
+    setMessage(event.target.value);
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedDay || !selectedTime || !message) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    setError("");
     setLoading(true);
+
     try {
       const res = await createAppointment(
         workerType,
-        workerId,
+        worker.id,
         message,
-        userData.id,
+        selectedDay,
+        selectedTime,
         selectedDate,
-        selectedTime // Include the selected date and time
+        userData.id
       );
       if (res.success) {
         revalidate();
         onClose();
-        toast.success("Appointment Created Successfully!");
         await createNotification(
           userData.id,
-          "ZpuoCwWArJcILSanSLLP7jAasuF3", // Nurse ID
+          "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
           `${userData.lastname} requested an appointment.`,
           { appointmentId: res.message }
         );
       } else {
-        toast.error(res.message);
         setError(res.message);
       }
     } catch (error) {
-      console.log(error);
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCancel = () => {
+    onClose(); // Close the modal without submitting
+  };
+
   return (
     <main className="z-50 p-5 fixed top-0 left-0 h-screen w-full bg-black/70 flex justify-center items-center">
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4 bg-white rounded-lg p-10 md:w-[700px] w-full"
-      >
-        <h1 className="font-semibold">Create {workerType} Appointment</h1>
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+        {/* Worker Info */}
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">
+            {worker ? `${worker.firstname} ${worker.lastname}` : "Loading..."}
+          </h2>
+          <p className="text-gray-600">
+            {worker ? worker.workerType : "Loading..."}
+          </p>
+        </div>
 
-        <section className="flex flex-col">
-          <label htmlFor="workerId" className="text-gray-500">
-            {workerType}
-          </label>
-          <select
-            id="workerId"
-            name="workerId"
-            className="p-2"
-            value={workerId}
-            onChange={(e) => setWorkerId(e.target.value)}
-          >
-            <option value="">Select {workerType}</option>
-            {workers.map((worker) => (
-              <option value={worker.id} key={worker.id}>
-                {worker.firstname} {worker.middlename} {worker.lastname}
-              </option>
-            ))}
-          </select>
-        </section>
-
+        {/* Availability */}
         {availability && (
-          <section className="flex flex-col">
-            <h2 className="text-gray-500">Availability:</h2>
-            <div>
-              {Object.entries(availability).map(([day, times]) => (
-                <div key={day}>
-                  <strong>{day.charAt(0).toUpperCase() + day.slice(1)}:</strong>{" "}
-                  {times.from} - {times.to}
-                </div>
-              ))}
+          <>
+            {/* Date Navigation */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center w-full">
+                <button
+                  onClick={goToPreviousWeek}
+                  disabled={currentWeekStart <= startOfWeek(new Date())}
+                  className="p-1 bg-gray-300 text-gray-700 hover:bg-gray-400 mr-2"
+                >
+                  Prev
+                </button>
+
+                <select
+                  id="daySelect"
+                  value={selectedDay}
+                  onChange={handleDaySelect}
+                  className="w-full p-2 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="" disabled>
+                    Choose a day
+                  </option>
+                  {getWeekDays().map((day, index) => {
+                    const dayName = format(day, "iiii");
+                    const fullDate = format(day, "MMMM dd, yyyy");
+                    const availabilityForDay =
+                      availability[dayName.toLowerCase()];
+                    return (
+                      <option
+                        key={index}
+                        value={dayName}
+                        disabled={!availabilityForDay}
+                      >
+                        {dayName} ({fullDate}){" "}
+                        {!availabilityForDay ? "(No Availability)" : ""}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                <button
+                  onClick={goToNextWeek}
+                  className="p-1 bg-gray-300 text-gray-700 hover:bg-gray-400 ml-2"
+                >
+                  Next
+                </button>
+              </div>
             </div>
-          </section>
+
+            {/* Time Selection */}
+            {selectedDay && availability[selectedDay.toLowerCase()] && (
+              <div className="mt-4">
+                <h4 className="text-sm font-semibold text-gray-700">
+                  Available Time:
+                </h4>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="time"
+                    value={selectedTime}
+                    min={availability[selectedDay.toLowerCase()].from}
+                    max={availability[selectedDay.toLowerCase()].to}
+                    onChange={handleTimeChange}
+                    className="w-1/2 p-2 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="text-gray-600">
+                    (Available from{" "}
+                    {availability[selectedDay.toLowerCase()].from} to{" "}
+                    {availability[selectedDay.toLowerCase()].to}) <br />
+                    (5 slots available)
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Message */}
+            <div className="mt-4">
+              <h4 className="text-sm font-semibold text-gray-700">Message:</h4>
+              <textarea
+                value={message}
+                onChange={handleMessageChange}
+                placeholder="Enter a message or note for the worker"
+                rows={4}
+                className="w-full p-2 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Error Message */}
+            {error && <p className="text-red-600 mt-2">{error}</p>}
+
+            {/* Buttons */}
+            <div className="mt-6 text-center space-x-4 flex justify-end">
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="btn bg-blue-600 text-white hover:bg-blue-700 p-2 rounded-md"
+              >
+                {loading ? "Submitting..." : "Submit"}
+              </button>
+
+              <button
+                onClick={handleCancel}
+                className="btn bg-gray-600 text-white hover:bg-gray-700 p-2 rounded-md"
+              >
+                Cancel
+              </button>
+            </div>
+          </>
         )}
-
-        <section className="flex flex-col">
-          <label htmlFor="date" className="text-gray-500">
-            Select Date:
-          </label>
-          <input
-            type="date"
-            id="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="p-2 border-2"
-            required // Make this field required
-          />
-
-          <label htmlFor="time" className="text-gray-500">
-            Select Time:
-          </label>
-          <input
-            type="time"
-            id="time"
-            value={selectedTime}
-            onChange={(e) => setSelectedTime(e.target.value)}
-            className="p-2 border-2"
-            required // Make this field required
-          />
-        </section>
-
-        <section className="flex flex-col">
-          <label htmlFor="message" className="text-gray-500">
-            Message
-          </label>
-          <textarea
-            name="message"
-            id="message"
-            value={message}
-            className="p-2 border-2"
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder={`${userData.firstname}'s reason for appointment.`}
-          ></textarea>
-        </section>
-
-        <section className="flex items-center justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="bg-red-950 text-white p-2 rounded-lg"
-            disabled={loading}
-          >
-            Cancel
-          </button>
-          <button
-            className="bg-red-950 text-white p-2 rounded-lg"
-            disabled={loading || !workerId || !selectedDate || !selectedTime}
-          >
-            {loading ? "Creating Appointment..." : "Create Appointment"}
-          </button>
-        </section>
-
-        {error && <p className="text-red-500">{error}</p>}
-      </form>
+      </div>
     </main>
   );
 }

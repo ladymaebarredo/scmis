@@ -11,11 +11,16 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
+import {createNotification} from "../utils/notifications"
+
 // Create a new appointment directly in the "appointments" collection
 export const createAppointment = async (
   workerType,
   workerId,
   message,
+  selectedDay,
+  selectedTime,
+  selectedDate,
   userId
 ) => {
   try {
@@ -43,10 +48,15 @@ export const createAppointment = async (
       workerType,
       workerId,
       message,
+      selectedDay,
+      selectedTime,
+      selectedDate,
       userId,
       appointmentStatus: "Pending",
       createdAt: serverTimestamp(),
     });
+
+    
 
     return { success: true, message: appointment.id };
   } catch (error) {
