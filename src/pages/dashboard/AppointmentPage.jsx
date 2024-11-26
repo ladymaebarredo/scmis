@@ -61,7 +61,10 @@ export default function AppointmentPage() {
           {appointment.workerType}
         </div>
       </div>
-      <Diagnostics appointmentId={appointment.id} />
+      <Diagnostics
+        appointmentId={appointment.id}
+        workerType={appointment.workerType}
+      />
     </div>
   );
 }

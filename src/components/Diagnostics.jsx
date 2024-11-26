@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getMedicines } from "../utils/inventory";
 import { assignDiagnostic, getDiagnostic } from "../utils/diagnostic"; // Ensure this is correctly imported
 
-export function Diagnostics({ appointmentId }) {
+export function Diagnostics({ appointmentId, workerType }) {
   const [medicines, setMedicines] = useState([]);
   const [diagnostic, setDiagnostic] = useState({ message: "", medicines: [] });
   const [selectedMedicine, setSelectedMedicine] = useState("");
@@ -76,7 +76,9 @@ export function Diagnostics({ appointmentId }) {
 
   return (
     <section className="p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Diagnostics</h2>
+      <h2 className="text-xl font-semibold mb-4">
+        {workerType == "Dentist" ? "Assessment" : "Diagnostic"}
+      </h2>
       <textarea
         value={diagnostic.message}
         onChange={(e) =>
