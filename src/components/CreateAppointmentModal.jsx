@@ -206,8 +206,8 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
                   <span className="text-gray-600">
                     (Available from{" "}
                     {availability[selectedDay.toLowerCase()].from} to{" "}
-                    {availability[selectedDay.toLowerCase()].to}) <br />
-                    (5 slots available)
+                    {availability[selectedDay.toLowerCase()].to}) <br />(
+                    {Math.floor(Math.random() * 5) + 1} slots available)
                   </span>
                 </div>
               </div>
