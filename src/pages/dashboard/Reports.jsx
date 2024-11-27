@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Document,
   Page,
@@ -7,6 +7,8 @@ import {
   StyleSheet,
   PDFViewer,
 } from "@react-pdf/renderer";
+import { getAllAppointments } from "../../utils/appointment";
+import { getAllDiagnostics } from "../../utils/diagnostic";
 
 // Example styles for the PDF document
 const styles = StyleSheet.create({
@@ -37,14 +39,14 @@ const styles = StyleSheet.create({
   tableCell: {
     padding: 5,
     borderRight: "1px solid black",
-    fontSize: "10px",
+    fontSize: "8px",
     textAlign: "left", // Ensure text alignment
     minWidth: "150px", // Set a minimum width for consistent column size
   },
   tableCellLast: {
     padding: 5,
     textAlign: "left",
-    fontSize: "5px", // Align the last column as well
+    fontSize: "2px", // Align the last column as well
   },
   footer: {
     position: "absolute",
@@ -55,131 +57,108 @@ const styles = StyleSheet.create({
   },
 });
 
-// Create a summary report component for appointments
-const SummaryReport = ({ appointments }) => {
+const SummaryReport = ({ appointments, diagnostics }) => {
   return (
     <Document>
       <Page style={styles.page}>
-        {/* Appointments Summary Section */}
+        {/* Appointment Table */}
         <View style={styles.section}>
-          <Text style={styles.title}>Appointments Summary Report</Text>
-          <Text style={{ fontSize: 12, color: "#333" }}>
-            This is a summary report of all appointments.
-          </Text>
+          <Text style={styles.title}>Appointment Summary</Text>
+          <View style={styles.table}>
+            {/* Appointment Table Header */}
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCell, styles.tableHeader]}>
+                Appointment Status
+              </Text>
+              <Text style={[styles.tableCell, styles.tableHeader]}>
+                Worker Type
+              </Text>
+              <Text style={[styles.tableCell, styles.tableHeader]}>
+                Appointee
+              </Text>
+              <Text style={[styles.tableCell, styles.tableHeader]}>Date</Text>
+            </View>
+            {/* Appointment Table Rows */}
+            {appointments.map((appointment) => (
+              <View style={styles.tableRow} key={appointment.id}>
+                <Text style={styles.tableCell}>
+                  {appointment.appointmentStatus}
+                </Text>
+                <Text style={styles.tableCell}>{appointment.workerType}</Text>
+                <Text style={styles.tableCell}>{appointment.appointee}</Text>
+                <Text style={styles.tableCell}>{appointment.selectedDate}</Text>
+              </View>
+            ))}
+          </View>
         </View>
 
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { fontWeight: "bold" }]}>ID</Text>
-            <Text style={[styles.tableCell, { fontWeight: "bold" }]}>
-              Appointee
-            </Text>
-            <Text style={[styles.tableCell, { fontWeight: "bold" }]}>
-              Status
-            </Text>
-            <Text style={[styles.tableCellLast, { fontWeight: "bold" }]}>
-              Created At
-            </Text>
-          </View>
-
-          {appointments.map((appointment) => (
-            <View style={styles.tableRow} key={appointment.id}>
-              <Text style={styles.tableCell}>{appointment.id}</Text>
-              <Text style={styles.tableCell}>{appointment.appointee}</Text>
-              <Text style={styles.tableCell}>
-                {appointment.appointmentStatus}
+        {/* Diagnostic Table */}
+        <View style={styles.section}>
+          <Text style={styles.title}>Diagnostic Summary</Text>
+          <View style={styles.table}>
+            {/* Diagnostic Table Header */}
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCell, styles.tableHeader]}>
+                Appointment ID
               </Text>
-              <Text style={styles.tableCellLast}>
-                {new Date(
-                  appointment.createdAt.seconds * 1000
-                ).toLocaleString()}
+              <Text style={[styles.tableCell, styles.tableHeader]}>
+                Medicines
+              </Text>
+
+              <Text style={[styles.tableCell, styles.tableHeader]}>
+                Given At
               </Text>
             </View>
-          ))}
-        </View>
-
-        {/* Inventory Report Section */}
-        <View style={styles.section}>
-          <Text style={styles.title}>Inventory Report - Medicines Given</Text>
-          <Text style={{ fontSize: 12, color: "#333" }}>
-            This section summarizes the medicines given to each appointee.
-          </Text>
-        </View>
-
-        <View style={styles.table}>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { fontWeight: "bold" }]}>
-              Appointee
-            </Text>
-            <Text style={[styles.tableCell, { fontWeight: "bold" }]}>
-              Medicine
-            </Text>
-            <Text style={[styles.tableCell, { fontWeight: "bold" }]}>
-              Quantity
-            </Text>
-          </View>
-
-          {appointments.map((appointment) =>
-            appointment.medicines ? (
-              appointment.medicines.map((medicine, index) => (
-                <View style={styles.tableRow} key={index}>
-                  <Text style={styles.tableCell}>{appointment.appointee}</Text>
-                  <Text style={styles.tableCell}>{medicine.name}</Text>
-                  <Text style={styles.tableCell}>{medicine.quantity}</Text>
-                </View>
-              ))
-            ) : (
-              <View style={styles.tableRow} key={appointment.id}>
-                <Text style={styles.tableCell}>{appointment.appointee}</Text>
-                <Text style={styles.tableCell}>No medicines given</Text>
-                <Text style={styles.tableCell}>-</Text>
+            {/* Diagnostic Table Rows */}
+            {diagnostics.map((diagnostic) => (
+              <View style={styles.tableRow} key={diagnostic.id}>
+                <Text style={styles.tableCell}>{diagnostic.appointmentId}</Text>
+                <Text style={styles.tableCell}>
+                  {/* List all medicines with quantities */}
+                  {diagnostic.medicines.map((medicine, index) => (
+                    <React.Fragment key={index}>
+                      {medicine.itemName} (Qty: {medicine.quantity})
+                      {index < diagnostic.medicines.length - 1 && ", "}
+                    </React.Fragment>
+                  ))}
+                </Text>
+                <Text style={styles.tableCell}>
+                  {/* Format the createdAt timestamp */}
+                  {new Date(
+                    diagnostic.createdAt.seconds * 1000
+                  ).toLocaleString()}
+                </Text>
               </View>
-            )
-          )}
+            ))}
+          </View>
         </View>
-
-        <Text style={styles.footer}>
-          Generated on {new Date().toLocaleString()}
-        </Text>
       </Page>
     </Document>
   );
 };
 
 export default function ReportsPage() {
-  const appointments = [
-    // Sample appointment data, replace with real data
-    {
-      id: 1,
-      appointee: "Dexter Basegro",
-      appointmentStatus: "Pending",
-      createdAt: { seconds: 1678877253 },
-      medicines: [
-        { name: "Paracetamol", quantity: "2 tablets" },
-        { name: "Cough Syrup", quantity: "1 bottle" },
-      ],
-    },
-    {
-      id: 2,
-      appointee: "Pricess Sadernas",
-      appointmentStatus: "Approved",
-      createdAt: { seconds: 1678887253 },
-      medicines: [{ name: "Aspirin", quantity: "1 tablet" }],
-    },
-    {
-      id: 3,
-      appointee: "Nathaniel Lucero",
-      appointmentStatus: "Completed",
-      createdAt: { seconds: 1678897253 },
-      medicines: null, // No medicines given
-    },
-  ];
+  const [appointments, setAppointments] = useState([]);
+  const [diagnostics, setDiagnostics] = useState([]);
+
+  useEffect(() => {
+    async function Fetch() {
+      const appointments = await getAllAppointments();
+      const diagnostics = await getAllDiagnostics();
+
+      console.log(diagnostics);
+
+      setAppointments(appointments);
+      setDiagnostics(diagnostics);
+    }
+    Fetch();
+  }, []);
 
   return (
     <div>
       <h1 className="font-bold my-10">Reports Page</h1>
       <PDFViewer className="h-screen w-full">
-        <SummaryReport appointments={appointments} />
+        <SummaryReport appointments={appointments} diagnostics={diagnostics} />
       </PDFViewer>
     </div>
   );

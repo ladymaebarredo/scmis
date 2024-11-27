@@ -86,3 +86,26 @@ export const getDiagnostic = async (appointmentId) => {
     throw error; // Propagate the error for further handling if necessary
   }
 };
+
+export const getAllDiagnostics = async () => {
+  try {
+    // Create a reference to the diagnostics collection
+    const diagnosticsRef = collection(db, "diagnostics");
+    // Get the collection snapshot
+    const querySnapshot = await getDocs(diagnosticsRef);
+
+    // Create an array to store the diagnostics data
+    const diagnostics = [];
+
+    // Loop through the documents and extract the data
+    querySnapshot.forEach((doc) => {
+      diagnostics.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Return the array of diagnostics
+    return diagnostics;
+  } catch (error) {
+    console.error("Error fetching diagnostics: ", error);
+    throw error; // Propagate the error for further handling if necessary
+  }
+};
