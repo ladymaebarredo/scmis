@@ -67,13 +67,10 @@ export default function AppointmentPage() {
         </div>
       </div>
       <RemarksForm role={user.data.role} appointmentId={appointment.id} />
-      {user.data.role == "WORKER" &&
-        appointment.appointmentStatus == "Approved" && (
-          <Diagnostics
-            appointmentId={appointment.id}
-            workerType={appointment.workerType}
-          />
-        )}
+      <Diagnostics
+        appointmentId={appointment.id}
+        workerType={appointment.workerType}
+      />
     </div>
   );
 }

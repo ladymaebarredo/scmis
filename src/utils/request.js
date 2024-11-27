@@ -109,3 +109,47 @@ export const getRequestsById = async (id) => {
     return null;
   }
 };
+
+export const updateMedkitRequestStatus = async (
+  requestId,
+  newStatus,
+  employeeId
+) => {
+  try {
+    // Reference the specific request document
+    const requestDocRef = doc(db, "requests", requestId);
+
+    // Update the status field
+    await updateDoc(requestDocRef, {
+      status: newStatus,
+      updatedAt: serverTimestamp(),
+    });
+    // Create a notification for the employee
+    let notificationMessage = "";
+    if (newStatus === "Approved") {
+      notificationMessage = `Your medkit request has been approved!`;
+    } else if (newStatus === "Declined") {
+      notificationMessage = `Your medkit request has been declined.`;
+    } else if (newStatus === "Completed") {
+      notificationMessage = `Your medkit request has been completed!`;
+    }
+    if (notificationMessage) {
+      await createNotification(
+        "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+        employeeId,
+        notificationMessage,
+        { type: "request-status", requestId }
+      );
+    }
+    return {
+      success: true,
+      message: `Request status updated to ${newStatus}.`,
+    };
+  } catch (error) {
+    console.error("Error updating request status:", error);
+    return {
+      success: false,
+      message: "An error occurred while updating the request status.",
+    };
+  }
+};

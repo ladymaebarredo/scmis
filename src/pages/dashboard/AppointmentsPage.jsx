@@ -20,6 +20,7 @@ import { createNotification } from "../../utils/notifications";
 import { Link } from "react-router-dom";
 import { getRecord } from "../../utils/record";
 import { LoadingPage } from "../LoadingPage";
+import { CreateWalkinModal } from "../../components/CreateWalkinModal";
 
 export default function AppointmentsPage() {
   const { user, userData, loading } = useUser();
@@ -272,8 +273,7 @@ const Nurse = ({ user }) => {
         <AppointmentsTable appointments={appointments} />
       </div>
       {nurseApp && (
-        <CreateAppointmentModal
-          workerType="Nurse"
+        <CreateWalkinModal
           onClose={toggleNurseApp}
           revalidate={fetchAppointments}
         />

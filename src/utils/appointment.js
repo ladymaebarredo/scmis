@@ -9,6 +9,7 @@ import {
   query,
   where,
   serverTimestamp,
+  orderBy,
 } from "firebase/firestore";
 
 //import { createNotification } from "../utils/notifications";
@@ -54,7 +55,7 @@ export const createAppointment = async (
       selectedDate,
       userId,
       appointee: fullname,
-      appointmentStatus: workerType == "Nurse" ? "Approved" : "Pending",
+      appointmentStatus: workerType == "WALKIN" ? "Approved" : "Pending",
       createdAt: serverTimestamp(),
     });
 
@@ -102,8 +103,15 @@ export const getAllAppointments = async () => {
   try {
     // Get the reference to the appointments collection
     const appointmentsCollection = collection(db, "appointments");
-    // Fetch all documents from the appointments collection
-    const querySnapshot = await getDocs(appointmentsCollection);
+
+    // Create a query to order by the createdAt field in descending order
+    const appointmentsQuery = query(
+      appointmentsCollection,
+      orderBy("createdAt", "desc")
+    );
+
+    // Fetch the sorted documents
+    const querySnapshot = await getDocs(appointmentsQuery);
 
     // Map through the results to format them
     const appointments = querySnapshot.docs.map((doc) => ({
