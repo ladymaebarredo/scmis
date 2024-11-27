@@ -45,12 +45,6 @@ export function CreateWalkinModal({ onClose, revalidate }) {
       if (res.success) {
         revalidate();
         onClose();
-        await createNotification(
-          userData.id,
-          "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
-          `${name} requested a walk-in appointment.`,
-          { appointmentId: res.message }
-        );
       } else {
         setError(res.message);
       }
