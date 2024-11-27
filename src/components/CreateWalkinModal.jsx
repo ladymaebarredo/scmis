@@ -34,7 +34,7 @@ export function CreateWalkinModal({ onClose, revalidate }) {
     try {
       const res = await createAppointment(
         "WALKIN",
-        "TODAY", // No worker for walk-ins
+        "Nurse", // No worker for walk-ins
         message,
         "TODAY", // No specific day
         "TODAY", // No specific time
