@@ -1,38 +1,61 @@
 import { useState } from "react";
-import { Link } from "react-router-dom"; // Assuming you're using React Router
+import { Link } from "react-router-dom";
 
 export function AppointmentsTable({ appointments }) {
   const [statusFilter, setStatusFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleStatusChange = (e) => {
     setStatusFilter(e.target.value);
   };
 
-  const filteredAppointments =
-    statusFilter === "All"
-      ? appointments
-      : appointments.filter(
-          (appointment) => appointment.appointmentStatus === statusFilter
-        );
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value.toLowerCase());
+  };
+
+  const filteredAppointments = appointments
+    .filter((appointment) =>
+      statusFilter === "All"
+        ? true
+        : appointment.appointmentStatus === statusFilter
+    )
+    .filter((appointment) =>
+      appointment.appointee.toLowerCase().includes(searchQuery)
+    );
 
   return (
     <div className="mb-10">
-      <div className="mb-4">
-        <label htmlFor="statusFilter" className="mr-2 font-semibold">
-          Filter by Status:
-        </label>
-        <select
-          id="statusFilter"
-          value={statusFilter}
-          onChange={handleStatusChange}
-          className="border p-2 rounded-lg"
-        >
-          <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Approved">Approved</option>
-          <option value="Completed">Completed</option>
-          <option value="Canceled">Canceled</option>
-        </select>
+      <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+          <label htmlFor="statusFilter" className="mr-2 font-semibold">
+            Filter by Status:
+          </label>
+          <select
+            id="statusFilter"
+            value={statusFilter}
+            onChange={handleStatusChange}
+            className="border p-2 rounded-lg"
+          >
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Completed">Completed</option>
+            <option value="Canceled">Canceled</option>
+          </select>
+        </div>
+        <div className="mt-4 md:mt-0">
+          <label htmlFor="searchQuery" className="mr-2 font-semibold">
+            Search by Appointee:
+          </label>
+          <input
+            id="searchQuery"
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Enter appointee name"
+            className="border p-2 rounded-lg"
+          />
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -42,10 +65,9 @@ export function AppointmentsTable({ appointments }) {
               <th className="p-2 border">Worker Type</th>
               <th className="p-2 border">Created At</th>
               <th className="p-2 border">Message</th>
-              <th className="p-2 border">User ID</th>
+              <th className="p-2 border">Appointee</th>
               <th className="p-2 border">Status</th>
-              <th className="p-2 border">Actions</th>{" "}
-              {/* Added Actions column */}
+              <th className="p-2 border">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -62,7 +84,7 @@ export function AppointmentsTable({ appointments }) {
                     ).toLocaleString()}
                   </td>
                   <td className="p-2 border">{appointment.message}</td>
-                  <td className="p-2 border">{appointment.userId}</td>
+                  <td className="p-2 border">{appointment.appointee}</td>
                   <td className="p-2 border text-center">
                     <span
                       className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
@@ -81,7 +103,6 @@ export function AppointmentsTable({ appointments }) {
                     </span>
                   </td>
                   <td className="p-2 border text-center">
-                    {/* View button with Link to appointment details by id */}
                     <Link
                       to={`${appointment.id}`}
                       className="text-blue-500 hover:underline"

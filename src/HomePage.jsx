@@ -18,17 +18,6 @@ export default function HomePage() {
           <MenuIcon className="md:hidden w-8 h-8" />
         </div>
         <div className="flex gap-6 items-center">
-          <div className="space-x-4 hidden md:flex">
-            <a href="" className="hover:text-gray-300 transition">
-              Home
-            </a>
-            <a href="" className="hover:text-gray-300 transition">
-              Features
-            </a>
-            <a href="" className="hover:text-gray-300 transition">
-              Contact
-            </a>
-          </div>
           <button className="bg-white px-5 py-2 rounded-md text-red-950">
             <Link to="/login">Login</Link>
           </button>

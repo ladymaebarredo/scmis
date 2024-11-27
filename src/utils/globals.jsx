@@ -3,6 +3,7 @@ import {
   BellIcon,
   BookAIcon,
   ChartAreaIcon,
+  Megaphone,
   Paperclip,
   User2Icon,
   Users2Icon,
@@ -18,7 +19,7 @@ export const appointeelinks = [
   { tag: "Dashboard", href: "/dashboard", icon: ChartAreaIcon },
   { tag: "Appointments", href: "/dashboard/appointments", icon: BookAIcon },
   { tag: "Certificate", href: "/dashboard/certificate", icon: Paperclip },
-]
+];
 
 export const nurseLinks = [
   { tag: "Dashboard", href: "/dashboard", icon: ChartAreaIcon },
@@ -26,7 +27,8 @@ export const nurseLinks = [
   { tag: "Certificate", href: "/dashboard/certificate", icon: Paperclip },
   { tag: "Inventory", href: "/dashboard/inventory", icon: BaggageClaimIcon },
   { tag: "Users", href: "/dashboard/users", icon: Users2Icon },
-]
+  { tag: "Reports", href: "/dashboard/reports", icon: Megaphone },
+];
 
 export const workerLinks = [
   { tag: "Dashboard", href: "/dashboard", icon: ChartAreaIcon },

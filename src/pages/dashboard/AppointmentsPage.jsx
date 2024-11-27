@@ -175,6 +175,9 @@ function Appointee({ user }) {
 
 const Nurse = ({ user }) => {
   const [appointments, setAppointments] = useState([]);
+  const [nurseApp, setNurseApp] = useState(false);
+
+  const toggleNurseApp = () => setNurseApp(!nurseApp);
 
   // Fetch all appointments
   const fetchAppointments = async () => {
@@ -210,56 +213,72 @@ const Nurse = ({ user }) => {
   );
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-lg font-bold mb-2">Pending Appointments</h1>
-      <div className="overflow-x-auto mb-10">
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-gray-200 text-left">
-              <th className="px-4 py-2">ID</th>
-              <th className="px-4 py-2">Worker Type</th>
-              <th className="px-4 py-2">Message</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingAppointments.map((appointment) => (
-              <tr key={appointment.id} className="bg-white border-b">
-                <td className="px-4 py-2">{appointment.id}</td>
-                <td className="px-4 py-2">{appointment.workerType}</td>
-                <td className="px-4 py-2">{appointment.message}</td>
-                <td className="px-4 py-2">{appointment.appointmentStatus}</td>
-                <td className="px-4 py-2">
-                  {appointment.appointmentStatus === "Pending" && (
-                    <div className="flex gap-2">
-                      <button
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                        onClick={() =>
-                          handleStatusChange(appointment, "Approved")
-                        }
-                      >
-                        Accept
-                      </button>
-                      <button
-                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        onClick={() =>
-                          handleStatusChange(appointment, "Declined")
-                        }
-                      >
-                        Decline
-                      </button>
-                    </div>
-                  )}
-                </td>
+    <>
+      <div className="container mx-auto p-6">
+        <button
+          className="bg-blue-600 text-white my-10 p-3 rounded-lg flex items-center space-x-2 hover:bg-blue-700 transition"
+          onClick={toggleNurseApp}
+        >
+          <PlusCircle className="w-5 h-5" />
+          <span>Create Walkin Appointment</span>
+        </button>
+        <h1 className="text-lg font-bold mb-2">Pending Appointments</h1>
+        <div className="overflow-x-auto mb-10">
+          <table className="min-w-full table-auto">
+            <thead>
+              <tr className="bg-gray-200 text-left">
+                <th className="px-4 py-2">ID</th>
+                <th className="px-4 py-2">Worker Type</th>
+                <th className="px-4 py-2">Message</th>
+                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {pendingAppointments.map((appointment) => (
+                <tr key={appointment.id} className="bg-white border-b">
+                  <td className="px-4 py-2">{appointment.id}</td>
+                  <td className="px-4 py-2">{appointment.workerType}</td>
+                  <td className="px-4 py-2">{appointment.message}</td>
+                  <td className="px-4 py-2">{appointment.appointmentStatus}</td>
+                  <td className="px-4 py-2">
+                    {appointment.appointmentStatus === "Pending" && (
+                      <div className="flex gap-2">
+                        <button
+                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                          onClick={() =>
+                            handleStatusChange(appointment, "Approved")
+                          }
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                          onClick={() =>
+                            handleStatusChange(appointment, "Declined")
+                          }
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <h1 className="text-lg font-bold mb-2">All Appointments</h1>
+        <AppointmentsTable appointments={appointments} />
       </div>
-      <h1 className="text-lg font-bold mb-2">All Appointments</h1>
-      <AppointmentsTable appointments={appointments} />
-    </div>
+      {nurseApp && (
+        <CreateAppointmentModal
+          workerType="Nurse"
+          onClose={toggleNurseApp}
+          revalidate={fetchAppointments}
+        />
+      )}
+    </>
   );
 };
 

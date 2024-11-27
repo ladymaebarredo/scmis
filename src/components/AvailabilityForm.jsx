@@ -71,6 +71,7 @@ export const AvailabilityForm = () => {
     try {
       await assignAvailability(data, userData.id);
       fetchAvailability(); // Fetch again to update the form
+      alert("Saved");
     } catch (error) {
       console.error("Error updating availability:", error);
     }

@@ -11,7 +11,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-import {createNotification} from "../utils/notifications"
+//import { createNotification } from "../utils/notifications";
 
 // Create a new appointment directly in the "appointments" collection
 export const createAppointment = async (
@@ -21,7 +21,8 @@ export const createAppointment = async (
   selectedDay,
   selectedTime,
   selectedDate,
-  userId
+  userId,
+  fullname
 ) => {
   try {
     // Create a reference to the appointments collection
@@ -52,11 +53,10 @@ export const createAppointment = async (
       selectedTime,
       selectedDate,
       userId,
-      appointmentStatus: "Pending",
+      appointee: fullname,
+      appointmentStatus: workerType == "Nurse" ? "Approved" : "Pending",
       createdAt: serverTimestamp(),
     });
-
-    
 
     return { success: true, message: appointment.id };
   } catch (error) {
@@ -150,5 +150,29 @@ export const getAppointment = async (appointmentId) => {
   } catch (error) {
     console.error("Error fetching worker's appointments:", error);
     return null;
+  }
+};
+
+export const countByDate = async (date, workerType) => {
+  try {
+    // Reference the appointments collection
+    const appointmentsRef = collection(db, "appointments");
+
+    // Query documents where the selectedDate matches the passed date
+    const q = query(
+      appointmentsRef,
+      where("selectedDate", "==", date),
+      where("appointmentStatus", "in", ["Pending", "Approved"]),
+      where("workerType", "==", workerType)
+    );
+
+    // Execute the query and get the documents
+    const querySnapshot = await getDocs(q);
+
+    // Return the count of matching documents
+    return querySnapshot.size;
+  } catch (error) {
+    console.error("Error counting appointments by date:", error);
+    throw error; // Rethrow error for the caller to handle
   }
 };

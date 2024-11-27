@@ -3,10 +3,14 @@ import { ItemModal } from "../../components/ItemModal";
 import { getItems } from "../../utils/inventory";
 import ItemsTable from "../../components/ItemsTable";
 import { BaggageClaim, Box } from "lucide-react";
+import { getAllRequests } from "../../utils/request";
+import RequestsTable from "../../components/RequestsTable";
 
 export default function InventoryPage() {
   const [items, setItems] = useState([]);
   const [stats, setStats] = useState({ totalItems: 0 }); // Add state for stats
+
+  const [requests, setRequests] = useState([]);
 
   const fetchItems = async () => {
     const items = await getItems();
@@ -15,8 +19,14 @@ export default function InventoryPage() {
     setStats({ totalItems });
   };
 
+  const fetchRequests = async () => {
+    const requests = await getAllRequests();
+    setRequests(requests);
+  };
+
   useEffect(() => {
     fetchItems();
+    fetchRequests();
   }, []);
 
   const [createItemModal, setCreateItemModal] = useState(false);
@@ -72,6 +82,10 @@ export default function InventoryPage() {
       {/* Inventory Table */}
       <section className="bg-white p-6 rounded-lg shadow-md">
         <ItemsTable items={items} toggleModal={toggleItemModal} />
+      </section>
+
+      <section className="bg-white p-6 rounded-lg shadow-md">
+        <RequestsTable requests={requests} />
       </section>
     </main>
   );

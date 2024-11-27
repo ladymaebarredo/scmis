@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {  appointeelinks, nurseLinks, workerLinks } from "../utils/globals";
+import { appointeelinks, nurseLinks, workerLinks } from "../utils/globals";
 import { UserButton } from "./UserButton";
 import { SignoutButton } from "./SignoutButton";
 import {
@@ -8,6 +8,7 @@ import {
   ChevronLeftCircle,
   ChevronRightCircle,
   User2Icon,
+  UserCog2,
 } from "lucide-react";
 import { useUser } from "../providers/UserProvider";
 
@@ -17,20 +18,22 @@ export function SideBar() {
   const { user, userData, notifications } = useUser();
 
   let slinks;
-  
-  switch(user.data.role) {
+
+  console.log(userData);
+
+  switch (user.data.role) {
     case "WORKER":
-      if(userData.workerType == "Nurse") {
-        slinks = nurseLinks
+      if (userData.workerType == "Nurse") {
+        slinks = nurseLinks;
       } else {
-        slinks = workerLinks
+        slinks = workerLinks;
       }
       break;
     case "STUDENT":
-      slinks = appointeelinks
+      slinks = appointeelinks;
       break;
     case "EMPLOYEE":
-      slinks = appointeelinks
+      slinks = appointeelinks;
       break;
   }
 
@@ -113,6 +116,21 @@ export function SideBar() {
               <p>Notifications</p>
             </Link>
           </div>
+          {userData.isDean && (
+            <div className="p-2">
+              <Link
+                to={`/dashboard/deans`}
+                className={`hover:bg-white hover:text-red-950 transition-all flex gap-3 p-2 rounded-full ${
+                  location.pathname == "/dashboard/deans"
+                    ? "font-bold"
+                    : "text-white/80"
+                }`}
+              >
+                <UserCog2 />
+                <p>Deans</p>
+              </Link>
+            </div>
+          )}
         </div>
         <div className="mt-auto p-5 flex flex-col gap-4">
           <UserButton />

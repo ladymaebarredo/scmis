@@ -3,11 +3,15 @@ import { Link, useParams } from "react-router-dom";
 import { getAppointment } from "../../utils/appointment";
 import { LoadingPage } from "../LoadingPage";
 import { Diagnostics } from "../../components/Diagnostics";
+import { useUser } from "../../providers/UserProvider";
+import { RemarksForm } from "../../components/RemarksForm";
 
 export default function AppointmentPage() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [appointment, setAppointment] = useState(null);
+
+  const { user } = useUser();
 
   const fetchAppointment = async () => {
     try {
@@ -44,7 +48,8 @@ export default function AppointmentPage() {
           <span className="font-semibold">Message:</span> {appointment.message}
         </div>
         <div className="mb-4 flex flex-col">
-          <span className="font-semibold">User ID:</span> {appointment.userId}
+          <span className="font-semibold">Appointee:</span>{" "}
+          {appointment.appointee}
           <Link
             to={`/dashboard/profile?id=${appointment.userId}`}
             className=" underline text-blue-600"
@@ -61,10 +66,14 @@ export default function AppointmentPage() {
           {appointment.workerType}
         </div>
       </div>
-      <Diagnostics
-        appointmentId={appointment.id}
-        workerType={appointment.workerType}
-      />
+      <RemarksForm role={user.data.role} appointmentId={appointment.id} />
+      {user.data.role == "WORKER" &&
+        appointment.appointmentStatus == "Approved" && (
+          <Diagnostics
+            appointmentId={appointment.id}
+            workerType={appointment.workerType}
+          />
+        )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useUser } from "../providers/UserProvider";
 import { useEffect, useState } from "react";
-import { createAppointment } from "../utils/appointment";
+import { countByDate, createAppointment } from "../utils/appointment";
 import { getWorkerByType } from "../utils/worker";
 import { getAvailability } from "../utils/availability";
 import { addDays, startOfWeek, format, subWeeks } from "date-fns";
@@ -20,6 +20,19 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [slots, setSlots] = useState(5);
+
+  useEffect(() => {
+    async function fetchCount() {
+      const count = await countByDate(selectedDate, workerType);
+      setSlots(5 - count);
+    }
+
+    if (selectedDate) {
+      fetchCount();
+    }
+  }, [selectedDate]);
 
   useEffect(() => {
     const fetchWorker = async () => {
@@ -100,7 +113,8 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
         selectedDay,
         selectedTime,
         selectedDate,
-        userData.id
+        userData.id,
+        `${userData.firstname} ${userData.lastname}`
       );
       if (res.success) {
         revalidate();
@@ -191,9 +205,7 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
             {/* Time Selection */}
             {selectedDay && availability[selectedDay.toLowerCase()] && (
               <div className="mt-4">
-                <h4 className="text-sm font-semibold text-gray-700">
-                  Available Time:
-                </h4>
+                <h4 className="text-sm font-semibold text-gray-700">Time:</h4>
                 <div className="flex items-center space-x-4">
                   <input
                     type="time"
@@ -206,8 +218,8 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
                   <span className="text-gray-600">
                     (Available from{" "}
                     {availability[selectedDay.toLowerCase()].from} to{" "}
-                    {availability[selectedDay.toLowerCase()].to}) <br />(
-                    {Math.floor(Math.random() * 5) + 1} slots available)
+                    {availability[selectedDay.toLowerCase()].to}) <br />({slots}{" "}
+                    slots available)
                   </span>
                 </div>
               </div>

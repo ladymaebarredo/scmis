@@ -1,4 +1,4 @@
-import { FileText, Calendar, MessageSquare } from "lucide-react";
+import { FileText, Calendar, MessageSquare, AlertTriangle } from "lucide-react";
 
 export default function CertificatePage() {
   return (
@@ -7,6 +7,21 @@ export default function CertificatePage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">
           Certificate
         </h1>
+
+        {/* Under Development Section */}
+        <div className="flex items-center space-x-2 mb-6 p-4 bg-yellow-100 rounded-lg">
+          <AlertTriangle className="text-yellow-500 w-6 h-6 sm:w-8 sm:h-8" />
+          <div>
+            <h2 className="text-lg sm:text-xl font-semibold text-yellow-600">
+              Under Development
+            </h2>
+            <p className="text-gray-600">
+              This feature is currently under development. Please check back
+              later.
+            </p>
+          </div>
+        </div>
+
         <div className="space-y-10">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-start space-x-4">
