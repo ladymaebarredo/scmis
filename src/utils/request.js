@@ -37,6 +37,7 @@ export const createMedkitRequest = async (employeeId, reason, name) => {
       reason,
       employeeName: name,
       status: "Pending",
+      items: [],
       createdAt: serverTimestamp(),
     });
 

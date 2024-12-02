@@ -1,79 +1,138 @@
-import { FileText, Calendar, MessageSquare, AlertTriangle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { db } from "../../utils/firebase"; // Firestore instance
+import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
+import CertificateRequestForm from "../../components/CertificateRequestForm";
+import { useUser } from "../../providers/UserProvider";
+import CertificateRequestTable from "../../components/CertificateRequestTable";
 
 export default function CertificatePage() {
+  const { user } = useUser();
+
   return (
     <main className="md:p-10">
-      <div className="w-full bg-white p-6 sm:p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8">
-          Certificate
-        </h1>
+      {user.data.role == "WORKER" ? <Nurse /> : <Appointee />}
+    </main>
+  );
+}
 
-        {/* Under Development Section */}
-        <div className="flex items-center space-x-2 mb-6 p-4 bg-yellow-100 rounded-lg">
-          <AlertTriangle className="text-yellow-500 w-6 h-6 sm:w-8 sm:h-8" />
-          <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-yellow-600">
-              Under Development
-            </h2>
-            <p className="text-gray-600">
-              This feature is currently under development. Please check back
-              later.
+function Appointee() {
+  const { userData } = useUser();
+  const [activeRequest, setActiveRequest] = useState(null);
+  const [allRequests, setAllRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRequests = async () => {
+    if (!userData?.id) return;
+
+    setLoading(true);
+
+    try {
+      // Query Firestore for the user's requests
+      const q = query(
+        collection(db, "certificateRequests"),
+        where("userId", "==", userData.id),
+        orderBy("dateCreated", "desc")
+      );
+      const snapshot = await getDocs(q);
+
+      const requests = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Find the active request with status "Pending"
+      const pendingRequest = requests.find((req) => req.status === "Pending");
+      setActiveRequest(pendingRequest || null);
+      setAllRequests(requests);
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequests();
+  }, [userData]);
+
+  return (
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-semibold mb-6 text-center">
+        Certificate Request
+      </h1>
+
+      {/* Section 1: Active Request */}
+      <section className="mb-8 p-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-2xl font-semibold mb-4">Active Request</h2>
+        {loading ? (
+          <p className="text-center text-gray-500">Loading active request...</p>
+        ) : activeRequest ? (
+          <div className="p-4 bg-blue-100 rounded-lg">
+            <p>
+              <strong>Reason:</strong> {activeRequest.reason}
+            </p>
+            <p>
+              <strong>Status:</strong> {activeRequest.status}
+            </p>
+            <p>
+              <strong>Submitted On:</strong>{" "}
+              {new Date(
+                activeRequest.dateCreated.seconds * 1000
+              ).toLocaleDateString()}
             </p>
           </div>
-        </div>
+        ) : (
+          <p className="text-center text-gray-500">No active requests</p>
+        )}
+      </section>
 
-        <div className="space-y-10">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-start space-x-4">
-              <FileText className="text-blue-500 w-6 h-6 sm:w-8 sm:h-8" />
-              <div>
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                  Medical Certificate
-                </h2>
-                <p className="text-gray-600">
-                  Request your medical certificate online with ease.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-4">
-              <Calendar className="text-green-500 w-6 h-6 sm:w-8 sm:h-8" />
-              <div>
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                  Date of Consultation
-                </h2>
-                <p className="text-gray-600">
-                  Specify the date when the consultation took place.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-4">
-              <MessageSquare className="text-yellow-500 w-6 h-6 sm:w-8 sm:h-8" />
-              <div>
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                  Reason for Request
-                </h2>
-                <p className="text-gray-600">
-                  Provide a brief description of why you need the certificate.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <button
-              type="button"
-              className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Request Certificate
-            </button>
-            <button
-              type="button"
-              className="w-full sm:w-auto px-6 py-3 bg-gray-600 text-white font-semibold rounded-lg shadow hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            >
-              View Previous Requests
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* Section 2: Request Form */}
+      <section className="mb-8">
+        <CertificateRequestForm revalidate={fetchRequests} />
+      </section>
+
+      {/* Section 3: Requests Table */}
+      <section className="bg-white p-6 shadow-lg rounded-lg">
+        <h2 className="text-2xl font-semibold mb-4">Request History</h2>
+        {loading ? (
+          <p className="text-center text-gray-500">Loading requests...</p>
+        ) : allRequests.length > 0 ? (
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border px-4 py-2">Reason</th>
+                <th className="border px-4 py-2">Status</th>
+                <th className="border px-4 py-2">Date Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allRequests.map((req) => (
+                <tr key={req.id} className="hover:bg-gray-50">
+                  <td className="border px-4 py-2">{req.reason}</td>
+                  <td className="border px-4 py-2">{req.status}</td>
+                  <td className="border px-4 py-2">
+                    {req.dateCreated
+                      ? new Date(
+                          req.dateCreated.seconds * 1000
+                        ).toLocaleDateString()
+                      : "N/A"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-center text-gray-500">No requests found</p>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function Nurse() {
+  return (
+    <main>
+      <CertificateRequestTable request={[]} />
     </main>
   );
 }

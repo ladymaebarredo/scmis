@@ -17,6 +17,7 @@ import AppointmentPage from "./pages/dashboard/AppointmentPage";
 import DeansPage from "./pages/dashboard/DeansPage";
 import RequestPage from "./pages/dashboard/RequestPage";
 import ReportsPage from "./pages/dashboard/Reports";
+import CertPage from "./pages/dashboard/CertPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -35,6 +36,7 @@ root.render(
           <Route path="requests/:id" element={<RequestPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="certificate" element={<CertificatePage />} />
+          <Route path="certificate/:id" element={<CertPage />} />
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="deans" element={<DeansPage />} />

@@ -10,23 +10,23 @@ export function MedkitItems() {
 
   // Static list of items
   const items = [
-    { id: 1, itemName: "Paracetamol" },
-    { id: 2, itemName: "Ibuprofen" },
-    { id: 3, itemName: "Amoxicillin" },
-    { id: 4, itemName: "Cetirizine" },
-    { id: 5, itemName: "Antihistamine" },
-    { id: 6, itemName: "Thermometer" },
-    { id: 7, itemName: "Face Mask" },
-    { id: 8, itemName: "Hand Sanitizer" },
-    { id: 9, itemName: "Bandage" },
-    { id: 10, itemName: "Gloves" },
+    { id: 1, name: "Paracetamol" },
+    { id: 2, name: "Ibuprofen" },
+    { id: 3, name: "Amoxicillin" },
+    { id: 4, name: "Cetirizine" },
+    { id: 5, name: "Antihistamine" },
+    { id: 6, name: "Thermometer" },
+    { id: 7, name: "Face Mask" },
+    { id: 8, name: "Hand Sanitizer" },
+    { id: 9, name: "Bandage" },
+    { id: 10, name: "Gloves" },
   ];
 
   // Example of initial items (could be fetched from an API or hardcoded)
   const initialMedkitItems = [
-    { itemName: "Paracetamol", quantity: 5 },
-    { itemName: "Ibuprofen", quantity: 2 },
-    { itemName: "Thermometer", quantity: 1 },
+    { name: "Paracetamol", quantity: 5 },
+    { name: "Ibuprofen", quantity: 2 },
+    { name: "Thermometer", quantity: 1 },
   ];
 
   useEffect(() => {
@@ -38,24 +38,21 @@ export function MedkitItems() {
     if (!selectedMedicine || quantity <= 0) return;
 
     const existingItem = medkitItems.find(
-      (item) => item.itemName === selectedMedicine
+      (item) => item.name === selectedMedicine
     );
 
     if (existingItem) {
       // Update quantity if item already exists
       setMedkitItems((prev) =>
         prev.map((item) =>
-          item.itemName === selectedMedicine
+          item.name === selectedMedicine
             ? { ...item, quantity: item.quantity + quantity }
             : item
         )
       );
     } else {
       // Add new item
-      setMedkitItems((prev) => [
-        ...prev,
-        { itemName: selectedMedicine, quantity },
-      ]);
+      setMedkitItems((prev) => [...prev, { name: selectedMedicine, quantity }]);
     }
 
     // Reset selected item and quantity
@@ -63,8 +60,8 @@ export function MedkitItems() {
     setQuantity(1);
   };
 
-  const handleRemoveItem = (itemName) => {
-    setMedkitItems((prev) => prev.filter((item) => item.itemName !== itemName));
+  const handleRemoveItem = (name) => {
+    setMedkitItems((prev) => prev.filter((item) => item.name !== name));
   };
 
   return (
@@ -79,8 +76,8 @@ export function MedkitItems() {
           >
             <option value="">Select Item</option>
             {items.map((item) => (
-              <option key={item.id} value={item.itemName}>
-                {item.itemName}
+              <option key={item.id} value={item.name}>
+                {item.name}
               </option>
             ))}
           </select>
@@ -117,11 +114,11 @@ export function MedkitItems() {
               className="flex justify-between items-center bg-gray-100 p-2 rounded-md mb-2"
             >
               <span>
-                {item.itemName} (Quantity: {item.quantity})
+                {item.name} (Quantity: {item.quantity})
               </span>
               {user?.data?.role === "WORKER" && (
                 <button
-                  onClick={() => handleRemoveItem(item.itemName)}
+                  onClick={() => handleRemoveItem(item.name)}
                   className="text-red-500 hover:underline"
                 >
                   Remove
