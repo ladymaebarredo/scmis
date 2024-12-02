@@ -5,6 +5,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useUser } from "../../providers/UserProvider";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import MedicalCertificate from "../../components/MedicalCertificate"; // Import the certificate component
+import { createNotification } from "../../utils/notifications";
 
 export default function CertPage() {
   const { id } = useParams();
@@ -43,6 +44,12 @@ export default function CertPage() {
     try {
       const docRef = doc(db, "certificateRequests", id);
       await updateDoc(docRef, { status });
+      await createNotification(
+        userData.id, // Nurse ID
+        request.userId,
+        `Nurse ${status} your certificate request.`,
+        { wow: "wow" }
+      );
       alert("Status updated successfully!");
       fetchRequest();
     } catch (error) {

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useUser } from "../providers/UserProvider";
 import { db } from "../utils/firebase"; // Import Firestore instance
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"; // Firestore functions
+import { createNotification } from "../utils/notifications";
 
 export default function CertificateRequestForm({ revalidate }) {
   const { userData } = useUser();
@@ -30,6 +31,13 @@ export default function CertificateRequestForm({ revalidate }) {
         status: "Pending",
         dateCreated: serverTimestamp(), // To record when the request was submitted
       });
+
+      await createNotification(
+        userData.id,
+        "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+        `${userData.lastname} requested an certificate.`,
+        { wow: "wow" }
+      );
 
       console.log("Form submitted:", formData);
       setSubmitted(true);
