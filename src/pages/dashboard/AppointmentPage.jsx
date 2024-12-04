@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getAppointment } from "../../utils/appointment";
+import { getAppointment, updateStatus } from "../../utils/appointment";
 import { LoadingPage } from "../LoadingPage";
 import { Diagnostics } from "../../components/Diagnostics";
 import { useUser } from "../../providers/UserProvider";
@@ -12,11 +12,19 @@ export default function AppointmentPage() {
   const [appointment, setAppointment] = useState(null);
 
   const { user } = useUser();
+  const [status, setStatus] = useState(""); // Store the status of the request
+
+  const handleStatusChange = async (e) => {
+    const newStatus = e.target.value;
+    setStatus(newStatus); // Optimistic update for UI
+    await updateStatus(id, newStatus);
+  };
 
   const fetchAppointment = async () => {
     try {
       const appointmentData = await getAppointment(id);
       setAppointment(appointmentData);
+      setStatus(appointmentData.appointmentStatus);
     } catch (error) {
       console.log("Error fetching appointment:", error);
     } finally {
@@ -36,9 +44,22 @@ export default function AppointmentPage() {
     <div className="w-full p-6 bg-gray-50 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Appointment Details</h2>
       <div className="bg-white p-4 rounded-lg shadow mb-10">
-        <div className="mb-4">
-          <span className="font-semibold">Status:</span>{" "}
-          {appointment.appointmentStatus}
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold">Appointment Status</h2>
+          {user.data.role === "WORKER" ? (
+            <select
+              value={status}
+              onChange={handleStatusChange}
+              className="p-2 border border-gray-300 rounded-md"
+            >
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Declined">Declined</option>
+              <option value="Completed">Completed</option>
+            </select>
+          ) : (
+            <p className="text-gray-600">{status}</p>
+          )}
         </div>
         <div className="mb-4">
           <span className="font-semibold">Created At:</span>{" "}

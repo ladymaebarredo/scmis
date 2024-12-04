@@ -48,7 +48,7 @@ export default function CertPage() {
         userData.id, // Nurse ID
         request.userId,
         `Nurse ${status} your certificate request.`,
-        { wow: "wow" }
+        `/dashboard/certificate`
       );
       alert("Status updated successfully!");
       fetchRequest();
@@ -94,6 +94,9 @@ export default function CertPage() {
       </h1>
 
       <div className="bg-white p-6 shadow-lg rounded-lg mb-6">
+        <p>
+          <strong>Name:</strong> {request.firstName} {request.lastName}
+        </p>
         <p>
           <strong>Reason:</strong> {request.reason}
         </p>
@@ -159,8 +162,8 @@ export default function CertPage() {
           <PDFDownloadLink
             document={
               <MedicalCertificate
-                firstname={request.firstname}
-                lastname={request.lastname}
+                firstname={request.firstName}
+                lastname={request.lastName}
               />
             }
             fileName={`${request.firstname}_${request.lastname}_medical_certificate.pdf`}

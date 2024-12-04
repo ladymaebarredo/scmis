@@ -45,7 +45,7 @@ export const createMedkitRequest = async (employeeId, reason, name) => {
       employeeId,
       "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
       `${name} requested a medkit!`,
-      { wow: "wow" }
+      `/dashboard/requests/${request.id}`
     );
 
     return { success: true, message: request.id };
@@ -139,7 +139,7 @@ export const updateMedkitRequestStatus = async (
         "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
         employeeId,
         notificationMessage,
-        { type: "request-status", requestId }
+        `/dashboard/requests/${requestId}`
       );
     }
     return {

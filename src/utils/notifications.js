@@ -22,14 +22,14 @@ export const readNotification = async (id) => {
   } catch (error) {}
 };
 
-export const createNotification = async (fromId, toId, message, data) => {
+export const createNotification = async (fromId, toId, message, link) => {
   try {
     await addDoc(collection(db, "notifications"), {
       fromId,
       toId,
       message,
       viewed: false,
-      data,
+      link,
       notifiedAt: serverTimestamp(),
     });
     return { success: true, message: "Notification created successfully." };

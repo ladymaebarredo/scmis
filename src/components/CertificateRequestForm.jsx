@@ -23,7 +23,7 @@ export default function CertificateRequestForm({ revalidate }) {
 
     try {
       // Add a new document to the "certificateRequests" collection
-      await addDoc(collection(db, "certificateRequests"), {
+      const cert = await addDoc(collection(db, "certificateRequests"), {
         userId: userData.id, // Assuming userData contains the user's unique ID
         firstName: userData.firstname,
         lastName: userData.lastname,
@@ -36,7 +36,7 @@ export default function CertificateRequestForm({ revalidate }) {
         userData.id,
         "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
         `${userData.lastname} requested an certificate.`,
-        { wow: "wow" }
+        `/dashboard/certificate/${cert.id}`
       );
 
       console.log("Form submitted:", formData);

@@ -23,7 +23,8 @@ export const createAppointment = async (
   selectedTime,
   selectedDate,
   userId,
-  fullname
+  fullname,
+  college
 ) => {
   try {
     // Create a reference to the appointments collection
@@ -55,6 +56,7 @@ export const createAppointment = async (
       selectedDate,
       userId,
       appointee: fullname,
+      appointeeCollege: college,
       appointmentStatus: workerType == "WALKIN" ? "Approved" : "Pending",
       createdAt: serverTimestamp(),
     });
@@ -74,7 +76,8 @@ export const getAppointments = async (typeId, type) => {
   try {
     const appointmentsQuery = query(
       collection(db, "appointments"),
-      where(type, "==", typeId)
+      where(type, "==", typeId),
+      orderBy("createdAt", "desc")
     );
     const querySnapshot = await getDocs(appointmentsQuery);
     const appointments = querySnapshot.docs.map((doc) => ({
@@ -170,7 +173,7 @@ export const countByDate = async (date, workerType) => {
     const q = query(
       appointmentsRef,
       where("selectedDate", "==", date),
-      where("appointmentStatus", "in", ["Pending", "Approved"]),
+      where("appointmentStatus", "in", ["Pending", "Approved", "Completed"]),
       where("workerType", "==", workerType)
     );
 

@@ -1,6 +1,12 @@
 import { useState, useEffect, useContext, createContext } from "react";
 import { getUser, getUserData } from "../utils/user";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  orderBy,
+} from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
@@ -55,10 +61,13 @@ export function UserProvider({ children }) {
 
   useEffect(() => {
     if (!user) return;
+
     const q = query(
       collection(db, "notifications"),
-      where("toId", "==", user.id)
+      where("toId", "==", user.id),
+      orderBy("notifiedAt", "desc") // Sort by `notifiedAt` in descending order
     );
+
     const unsubscribeNotifications = onSnapshot(q, (querySnapshot) => {
       const notificationsArray = [];
       querySnapshot.forEach((doc) => {

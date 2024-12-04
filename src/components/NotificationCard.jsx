@@ -1,13 +1,23 @@
 import { Bell, CheckCircle } from "lucide-react";
 import { deleteNotification, readNotification } from "../utils/notifications";
+import { useNavigate } from "react-router-dom";
 
 export function NotificationCard({ notification }) {
+  const navigate = useNavigate();
+
   const handleRead = async () => {
     await readNotification(notification.id);
   };
 
   const handleDelete = async () => {
     await deleteNotification(notification.id);
+  };
+
+  const handleView = () => {
+    if (notification.link) {
+      handleRead();
+      navigate(notification.link); // Navigate to the link in the notification
+    }
   };
 
   return (
@@ -24,20 +34,27 @@ export function NotificationCard({ notification }) {
         )}
       </div>
       <div className="flex-1">
-        <h1 className="text-lg font-semibold mb-1">{notification.message}</h1>
+        <h1
+          className="text-lg font-semibold mb-1 cursor-pointer"
+          onClick={handleView}
+        >
+          {notification.message}
+        </h1>
         <p className="text-sm text-gray-500">
           {new Date(notification.notifiedAt.seconds * 1000).toLocaleString()}
         </p>
       </div>
-      {!notification.viewed ? (
-        <div onClick={handleRead} className="text-blue-500 cursor-pointer">
-          Mark as read
-        </div>
-      ) : (
-        <div onClick={handleDelete} className="text-red-500 cursor-pointer">
-          Delete
-        </div>
-      )}
+      <div className="flex gap-2">
+        {!notification.viewed ? (
+          <div onClick={handleRead} className="text-blue-500 cursor-pointer">
+            Mark as read
+          </div>
+        ) : (
+          <div onClick={handleDelete} className="text-red-500 cursor-pointer">
+            Delete
+          </div>
+        )}
+      </div>
     </div>
   );
 }

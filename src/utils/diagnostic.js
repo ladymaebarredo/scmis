@@ -49,7 +49,7 @@ export const assignDiagnostic = async (appointmentId, message, medicines) => {
             "o1jCIz3nAFaETuEvhmIWIIXjBJJ2",
             "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
             `${itemName} has run out of stock!`,
-            { wow: "wow" }
+            `/dashboard/inventory`
           );
         }
         // Update the inventory document

@@ -198,13 +198,13 @@ const Nurse = ({ user }) => {
       user.id,
       appointment.workerId,
       `Nurse ${status} an appointment for you.`,
-      { appointmentId: appointment.id }
+      `/dashboard/appointments/${appointment.id}`
     );
     await createNotification(
       user.id,
       appointment.userId,
       `Nurse ${status} your appointment.`,
-      { appointmentId: appointment.id }
+      `/dashboard/appointments/${appointment.id}`
     );
   };
 
@@ -309,7 +309,7 @@ const Worker = ({ user, userData }) => {
       user.id,
       "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
       `${userData.workerType} ${status} an appointment.`,
-      { appointmentId: appointment.id }
+      `/dashboard/appointments/${appointment.id}`
     );
   };
 

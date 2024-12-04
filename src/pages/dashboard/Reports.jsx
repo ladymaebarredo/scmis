@@ -9,6 +9,8 @@ import {
 } from "@react-pdf/renderer";
 import { getAllAppointments } from "../../utils/appointment";
 import { getAllDiagnostics } from "../../utils/diagnostic";
+import { AppointmentsReport } from "../../components/AppointmentReport";
+import { DiagnosticReport } from "../../components/DiagnosticReport";
 
 // Example styles for the PDF document
 const styles = StyleSheet.create({
@@ -70,13 +72,16 @@ const SummaryReport = ({ appointments, diagnostics }) => {
               <Text style={[styles.tableCell, styles.tableHeader]}>
                 Appointment Status
               </Text>
-              <Text style={[styles.tableCell, styles.tableHeader]}>
-                Worker Type
-              </Text>
+              <Text style={[styles.tableCell, styles.tableHeader]}>Type</Text>
               <Text style={[styles.tableCell, styles.tableHeader]}>
                 Appointee
               </Text>
-              <Text style={[styles.tableCell, styles.tableHeader]}>Date</Text>
+              <Text style={[styles.tableCell, styles.tableHeader]}>
+                Appointee College
+              </Text>
+              <Text style={[styles.tableCell, styles.tableHeader]}>
+                Date and Time
+              </Text>
             </View>
             {/* Appointment Table Rows */}
             {appointments.map((appointment) => (
@@ -86,7 +91,12 @@ const SummaryReport = ({ appointments, diagnostics }) => {
                 </Text>
                 <Text style={styles.tableCell}>{appointment.workerType}</Text>
                 <Text style={styles.tableCell}>{appointment.appointee}</Text>
-                <Text style={styles.tableCell}>{appointment.selectedDate}</Text>
+                <Text style={styles.tableCell}>
+                  {appointment.appointeeCollege}
+                </Text>
+                <Text style={styles.tableCell}>
+                  {appointment.selectedDate} {appointment.selectedTime}
+                </Text>
               </View>
             ))}
           </View>
@@ -158,7 +168,10 @@ export default function ReportsPage() {
     <div>
       <h1 className="font-bold my-10">Reports Page</h1>
       <PDFViewer className="h-screen w-full">
-        <SummaryReport appointments={appointments} diagnostics={diagnostics} />
+        <AppointmentsReport appointments={appointments} />
+      </PDFViewer>
+      <PDFViewer className="h-screen w-full">
+        <DiagnosticReport diagnostics={diagnostics} />
       </PDFViewer>
     </div>
   );

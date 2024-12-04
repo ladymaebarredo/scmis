@@ -114,7 +114,8 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
         selectedTime,
         selectedDate,
         userData.id,
-        `${userData.firstname} ${userData.lastname}`
+        `${userData.firstname} ${userData.lastname}`,
+        `${userData.department}-${userData.program}`
       );
       if (res.success) {
         revalidate();
@@ -123,7 +124,7 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
           userData.id,
           "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
           `${userData.lastname} requested an appointment.`,
-          { appointmentId: res.message }
+          `/dashboard/appointments/${res.message}`
         );
       } else {
         setError(res.message);

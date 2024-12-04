@@ -132,7 +132,7 @@ function Appointee() {
 function Nurse() {
   return (
     <main>
-      <CertificateRequestTable request={[]} />
+      <CertificateRequestTable />
     </main>
   );
 }

@@ -2,6 +2,7 @@ import { useUser } from "../providers/UserProvider";
 import { useState } from "react";
 import { createAppointment } from "../utils/appointment";
 import { createNotification } from "../utils/notifications";
+import { serverTimestamp } from "firebase/firestore";
 
 export function CreateWalkinModal({ onClose, revalidate }) {
   const { userData } = useUser();
@@ -37,10 +38,11 @@ export function CreateWalkinModal({ onClose, revalidate }) {
         "Nurse", // No worker for walk-ins
         message,
         "TODAY", // No specific day
-        "TODAY", // No specific time
+        serverTimestamp(),
         selectedDate,
         studentId,
-        name
+        name,
+        course
       );
       if (res.success) {
         revalidate();
