@@ -115,7 +115,9 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
         selectedDate,
         userData.id,
         `${userData.firstname} ${userData.lastname}`,
-        `${userData.department}-${userData.program}`
+        userData.department && userData.program
+          ? `${userData.department}-${userData.program}`
+          : userData.assignment
       );
       if (res.success) {
         revalidate();

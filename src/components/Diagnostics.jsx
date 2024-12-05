@@ -93,52 +93,59 @@ export function Diagnostics({ appointmentId, workerType }) {
             className="w-full h-24 p-2 border border-gray-300 rounded-md mb-4"
             placeholder="Enter diagnostic message..."
           />
-          <div className="flex items-center mb-4">
-            <select
-              value={selectedMedicine}
-              onChange={(e) => setSelectedMedicine(e.target.value)}
-              className="mr-2 p-2 border border-gray-300 rounded-md"
-            >
-              <option value="">Select Medicine</option>
-              {medicines.map((med) => (
-                <option key={med.id} value={med.itemName}>
-                  {med.itemName}
-                </option>
-              ))}
-            </select>
-            <input
-              type="number"
-              value={quantity}
-              min="1"
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              className="mr-2 w-16 p-2 border border-gray-300 rounded-md"
-            />
-            <button
-              onClick={handleAddMedicine}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-            >
-              Add Medicine
-            </button>
-          </div>
-          <div className="medicines-area-box mb-4">
-            <h3 className="text-lg font-semibold mb-2">Selected Medicines</h3>
-            {diagnostic.medicines.map((med, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center bg-gray-100 p-2 rounded-md mb-2"
-              >
-                <span>
-                  {med.itemName} (Quantity: {med.quantity})
-                </span>
-                <button
-                  onClick={() => handleRemoveMedicine(med.itemName)}
-                  className="text-red-500 hover:underline"
+          {/* Medicines section */}
+          {workerType !== "Dentist" && (
+            <>
+              <div className="flex items-center mb-4">
+                <select
+                  value={selectedMedicine}
+                  onChange={(e) => setSelectedMedicine(e.target.value)}
+                  className="mr-2 p-2 border border-gray-300 rounded-md"
                 >
-                  Remove
+                  <option value="">Select Medicine</option>
+                  {medicines.map((med) => (
+                    <option key={med.id} value={med.itemName}>
+                      {med.itemName}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  value={quantity}
+                  min="1"
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  className="mr-2 w-16 p-2 border border-gray-300 rounded-md"
+                />
+                <button
+                  onClick={handleAddMedicine}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                >
+                  Add Medicine
                 </button>
               </div>
-            ))}
-          </div>
+              <div className="medicines-area-box mb-4">
+                <h3 className="text-lg font-semibold mb-2">
+                  Selected Medicines
+                </h3>
+                {diagnostic.medicines.map((med, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center bg-gray-100 p-2 rounded-md mb-2"
+                  >
+                    <span>
+                      {med.itemName} (Quantity: {med.quantity})
+                    </span>
+                    <button
+                      onClick={() => handleRemoveMedicine(med.itemName)}
+                      className="text-red-500 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
           <button
             onClick={handleSave}
             className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
@@ -151,20 +158,22 @@ export function Diagnostics({ appointmentId, workerType }) {
           <p className="mb-4">
             <strong>Message:</strong> {diagnostic.message || "N/A"}
           </p>
-          <div className="medicines-area-box mb-4">
-            <h3 className="text-lg font-semibold mb-2">Medicines</h3>
-            {diagnostic.medicines.length > 0 ? (
-              diagnostic.medicines.map((med, index) => (
-                <div key={index} className="bg-gray-100 p-2 rounded-md mb-2">
-                  <span>
-                    {med.itemName} (Quantity: {med.quantity})
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p>No medicines assigned</p>
-            )}
-          </div>
+          {workerType !== "Dentist" && (
+            <div className="medicines-area-box mb-4">
+              <h3 className="text-lg font-semibold mb-2">Medicines</h3>
+              {diagnostic.medicines.length > 0 ? (
+                diagnostic.medicines.map((med, index) => (
+                  <div key={index} className="bg-gray-100 p-2 rounded-md mb-2">
+                    <span>
+                      {med.itemName} (Quantity: {med.quantity})
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p>No medicines assigned</p>
+              )}
+            </div>
+          )}
         </>
       )}
     </section>

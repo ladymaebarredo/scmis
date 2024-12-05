@@ -18,6 +18,7 @@ import DeansPage from "./pages/dashboard/DeansPage";
 import RequestPage from "./pages/dashboard/RequestPage";
 import ReportsPage from "./pages/dashboard/Reports";
 import CertPage from "./pages/dashboard/CertPage";
+import BulkPage from "./pages/dashboard/BulkPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -37,6 +38,7 @@ root.render(
           <Route path="reports" element={<ReportsPage />} />
           <Route path="certificate" element={<CertificatePage />} />
           <Route path="certificate/:id" element={<CertPage />} />
+          <Route path="certificate/bulk/:id" element={<BulkPage />} />
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="deans" element={<DeansPage />} />

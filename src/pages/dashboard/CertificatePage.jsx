@@ -4,6 +4,8 @@ import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
 import CertificateRequestForm from "../../components/CertificateRequestForm";
 import { useUser } from "../../providers/UserProvider";
 import CertificateRequestTable from "../../components/CertificateRequestTable";
+import { getAllBulk } from "../../utils/bulk";
+import BulkRequestsTable from "../../components/BulkRequestTable";
 
 export default function CertificatePage() {
   const { user } = useUser();
@@ -130,9 +132,25 @@ function Appointee() {
 }
 
 function Nurse() {
+  const [bulkData, setBulkData] = useState([]);
+
+  useEffect(() => {
+    const fetchBulkData = async () => {
+      try {
+        const data = await getAllBulk(); // Fetch data using the function
+        setBulkData(data); // Update state with fetched data
+      } catch (error) {
+        console.error("Failed to fetch bulk data:", error.message);
+      }
+    };
+
+    fetchBulkData();
+  }, []);
+
   return (
     <main>
       <CertificateRequestTable />
+      <BulkRequestsTable requests={bulkData} />
     </main>
   );
 }
