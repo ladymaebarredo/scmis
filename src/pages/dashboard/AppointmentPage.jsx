@@ -6,18 +6,26 @@ import { Diagnostics } from "../../components/Diagnostics";
 import { useUser } from "../../providers/UserProvider";
 import { RemarksForm } from "../../components/RemarksForm";
 
+import { createNotification } from "../../utils/notifications";
+
 export default function AppointmentPage() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [appointment, setAppointment] = useState(null);
 
-  const { user } = useUser();
+  const { user, userData } = useUser();
   const [status, setStatus] = useState(""); // Store the status of the request
 
   const handleStatusChange = async (e) => {
     const newStatus = e.target.value;
     setStatus(newStatus); // Optimistic update for UI
     await updateStatus(id, newStatus);
+    await createNotification(
+      user.id,
+      appointment.userId,
+      `${userData.workerType} ${status} your appointment.`,
+      `/dashboard/appointments/${appointment.id}`
+    );
   };
 
   const fetchAppointment = async () => {
@@ -87,10 +95,12 @@ export default function AppointmentPage() {
         </div>
       </div>
       <RemarksForm role={user.data.role} appointmentId={appointment.id} />
-      <Diagnostics
-        appointmentId={appointment.id}
-        workerType={appointment.workerType}
-      />
+      {(status == "Approved" || status == "Completed") && (
+        <Diagnostics
+          appointmentId={appointment.id}
+          workerType={appointment.workerType}
+        />
+      )}
     </div>
   );
 }
