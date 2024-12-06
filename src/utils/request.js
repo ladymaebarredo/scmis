@@ -154,3 +154,60 @@ export const updateMedkitRequestStatus = async (
     };
   }
 };
+
+export const updateMedkitItems = async (id, medkitItems) => {
+  try {
+    // Reference the specific request document
+    const requestDocRef = doc(db, "requests", id);
+    // Update the status field
+    await updateDoc(requestDocRef, {
+      medkitItems,
+      updatedAt: serverTimestamp(),
+    });
+
+    // Loop through medicines and update their quantities
+    for (const med of medkitItems) {
+      const { name, quantity } = med;
+      // Query the inventory collection for the specific item
+      const q = query(
+        collection(db, "inventory"),
+        where("itemName", "==", name)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // Assuming name is unique, process the first matching document
+        const docSnapshot = querySnapshot.docs[0];
+        const currentQuantity = docSnapshot.data().quantity;
+
+        // Calculate the new quantity
+        const newQuantity = Math.max(0, currentQuantity - quantity);
+        if (newQuantity == 0) {
+          console.log("no stock");
+          await createNotification(
+            "o1jCIz3nAFaETuEvhmIWIIXjBJJ2",
+            "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+            `${name} has run out of stock!`,
+            `/dashboard/inventory`
+          );
+        }
+        // Update the inventory document
+        await updateDoc(docSnapshot.ref, { quantity: newQuantity });
+        console.log(`Updated ${name}: New quantity is ${newQuantity}`);
+      } else {
+        console.warn(`Medicine with name "${name}" not found in inventory.`);
+      }
+    }
+
+    return {
+      success: true,
+      message: `Request status updated to ${newStatus}.`,
+    };
+  } catch (error) {
+    console.error("Error updating request status:", error);
+    return {
+      success: false,
+      message: "An error occurred while updating the request status.",
+    };
+  }
+};

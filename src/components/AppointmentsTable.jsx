@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { format } from "date-fns";
 
 export function AppointmentsTable({ appointments }) {
   const [statusFilter, setStatusFilter] = useState("All");
@@ -63,8 +64,8 @@ export function AppointmentsTable({ appointments }) {
           <thead>
             <tr className="bg-gray-200">
               <th className="p-2 border">Worker Type</th>
-              <th className="p-2 border">Created At</th>
-              <th className="p-2 border">Message</th>
+              <th className="p-2 border">Date Requested</th>
+              <th className="p-2 border">Date of Appointment</th>
               <th className="p-2 border">Appointee</th>
               <th className="p-2 border">Status</th>
               <th className="p-2 border">Actions</th>
@@ -83,7 +84,18 @@ export function AppointmentsTable({ appointments }) {
                       appointment.createdAt.seconds * 1000
                     ).toLocaleString()}
                   </td>
-                  <td className="p-2 border">{appointment.message}</td>
+                  <td className="p-2 border">
+                    {appointment.selectedDate} {appointment.selectedDay}{" "}
+                    {format(
+                      new Date(
+                        0,
+                        0,
+                        0,
+                        ...appointment.selectedTime.split(":").map(Number)
+                      ),
+                      "h:mm:ss a"
+                    )}
+                  </td>
                   <td className="p-2 border">{appointment.appointee}</td>
                   <td className="p-2 border text-center">
                     <span

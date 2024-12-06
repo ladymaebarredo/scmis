@@ -9,8 +9,6 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false); // Add loading state
 
-  console.log(loading);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");

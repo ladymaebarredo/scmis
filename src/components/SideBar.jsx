@@ -19,8 +19,6 @@ export function SideBar() {
 
   let slinks;
 
-  console.log(userData);
-
   switch (user.data.role) {
     case "WORKER":
       if (userData.workerType == "Nurse") {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createMedkitRequest } from "../utils/request";
+import { createNotification } from "../utils/notifications";
 
 export default function MedkitRequest({ employeeId, name, revalidate }) {
   const [formData, setFormData] = useState({

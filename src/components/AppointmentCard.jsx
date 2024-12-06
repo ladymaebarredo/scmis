@@ -48,8 +48,8 @@ export function AppointmentCard({ appointment, revalidate }) {
         </h3>
         <span
           className={`px-3 py-1 text-sm font-medium text-white rounded-full ${
-            appointment.appointmentStatus === "Canceled"
-              ? "bg-red-500"
+            appointment.appointmentStatus === "Approved"
+              ? "bg-green-500"
               : "bg-yellow-500"
           }`}
         >
@@ -61,19 +61,20 @@ export function AppointmentCard({ appointment, revalidate }) {
           <strong>Message:</strong> {appointment.message}
         </p>
         <p className="flex flex-col">
-          <strong>Created At:</strong>
+          <strong>Appointment At:</strong>
           {new Date(appointment.createdAt.seconds * 1000).toLocaleString()}
         </p>
       </div>
-      {appointment.appointmentStatus !== "Canceled" && (
-        <button
-          onClick={handleCancelAppointment}
-          disabled={canceling}
-          className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
-        >
-          {canceling ? "Canceling..." : "Cancel Appointment"}
-        </button>
-      )}
+      {appointment.appointmentStatus !== "Canceled" ||
+        (appointment.appointmentStatus !== "Approved" && (
+          <button
+            onClick={handleCancelAppointment}
+            disabled={canceling}
+            className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
+          >
+            {canceling ? "Canceling..." : "Cancel Appointment"}
+          </button>
+        ))}
     </div>
   );
 }

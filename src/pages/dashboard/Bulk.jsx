@@ -11,35 +11,32 @@ export default function Bulk() {
 
   const [bulkRequests, setBulkRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const fetchBulkRequests = async () => {
+    setLoading(true);
+    try {
+      const q = query(
+        collection(db, "bulkCertificate"),
+        where("deanId", "==", userData.id),
+        orderBy("dateCreated", "desc")
+      );
 
+      const querySnapshot = await getDocs(q);
+      console.log("Snapshot size:", querySnapshot.size);
+
+      const requests = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log("Requests fetched:", requests);
+
+      setBulkRequests(requests);
+    } catch (error) {
+      console.error("Error fetching bulk requests:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchBulkRequests = async () => {
-      setLoading(true);
-      try {
-        const q = query(
-          collection(db, "bulkCertificate"),
-          where("deanId", "==", userData.id),
-          orderBy("dateCreated", "desc")
-        );
-        console.log("Query:", q);
-
-        const querySnapshot = await getDocs(q);
-        console.log("Snapshot size:", querySnapshot.size);
-
-        const requests = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        console.log("Requests fetched:", requests);
-
-        setBulkRequests(requests);
-      } catch (error) {
-        console.error("Error fetching bulk requests:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (userData?.id) fetchBulkRequests();
   }, []);
 
@@ -47,7 +44,7 @@ export default function Bulk() {
 
   return (
     <section>
-      <BulkCertificateForm userData={userData} />
+      <BulkCertificateForm userData={userData} revalidate={fetchBulkRequests} />
       <BulkRequestsTable requests={bulkRequests} />
     </section>
   );

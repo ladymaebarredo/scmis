@@ -43,7 +43,9 @@ function Appointee() {
       }));
 
       // Find the active request with status "Pending"
-      const pendingRequest = requests.find((req) => req.status === "Pending");
+      const pendingRequest = requests.find(
+        (req) => req.status === "Pending" || req.status === "Approved"
+      );
       setActiveRequest(pendingRequest || null);
       setAllRequests(requests);
     } catch (error) {
@@ -63,25 +65,53 @@ function Appointee() {
         Certificate Request
       </h1>
 
-      {/* Section 1: Active Request */}
-      <section className="mb-8 p-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-2xl font-semibold mb-4">Active Request</h2>
+      <section className="mb-8 p-8 bg-gradient-to-r from-blue-50 to-blue-100 shadow-lg rounded-lg border border-blue-200">
+        <h2 className="text-lg font-bold text-red-700 mb-6">Active Request</h2>
         {loading ? (
-          <p className="text-center text-gray-500">Loading active request...</p>
+          <p className="text-center text-gray-500 animate-pulse">
+            Loading active request...
+          </p>
         ) : activeRequest ? (
-          <div className="p-4 bg-blue-100 rounded-lg">
-            <p>
-              <strong>Reason:</strong> {activeRequest.reason}
-            </p>
-            <p>
-              <strong>Status:</strong> {activeRequest.status}
-            </p>
-            <p>
-              <strong>Submitted On:</strong>{" "}
-              {new Date(
-                activeRequest.dateCreated.seconds * 1000
-              ).toLocaleDateString()}
-            </p>
+          <div className="p-6 bg-white rounded-lg shadow-md border border-gray-200">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">Details</h3>
+              <p className="text-gray-700 mt-2">
+                <strong>Reason:</strong> {activeRequest.reason}
+              </p>
+              <p className="text-gray-700 mt-1">
+                <strong>Status:</strong>{" "}
+                <span
+                  className={`px-2 py-1 rounded-md ${
+                    activeRequest.status === "Approved"
+                      ? "bg-green-100 text-green-700"
+                      : activeRequest.status === "Pending"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {activeRequest.status}
+                </span>
+              </p>
+              <p className="text-gray-700 mt-1">
+                <strong>Submitted On:</strong>{" "}
+                {new Date(
+                  activeRequest.dateCreated.seconds * 1000
+                ).toLocaleDateString()}
+              </p>
+            </div>
+            {activeRequest.status === "Approved" && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  To be Claimed
+                </h3>
+                <p className="text-gray-700 mt-2">
+                  <strong>Weekdays:</strong> Anytime
+                </p>
+                <p className="text-gray-700 mt-1">
+                  <strong>Time:</strong> 9:00 AM - 5:00 PM
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <p className="text-center text-gray-500">No active requests</p>

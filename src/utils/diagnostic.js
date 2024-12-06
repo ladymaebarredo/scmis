@@ -13,7 +13,13 @@ import {
 } from "firebase/firestore";
 import { createNotification } from "./notifications";
 
-export const assignDiagnostic = async (appointmentId, message, medicines) => {
+export const assignDiagnostic = async (
+  appointmentId,
+  message,
+  medicines,
+  bloodPressure,
+  temperature
+) => {
   try {
     // Create a reference to the diagnostic document
     const docRef = doc(db, "diagnostics", appointmentId);
@@ -21,10 +27,10 @@ export const assignDiagnostic = async (appointmentId, message, medicines) => {
       appointmentId,
       message,
       medicines,
+      bloodPressure,
+      temperature,
       createdAt: serverTimestamp(),
     });
-
-    console.log(medicines);
 
     // Loop through medicines and update their quantities
     for (const med of medicines) {

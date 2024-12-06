@@ -53,7 +53,7 @@ export const departments = [
   },
   {
     name: "College of Criminology",
-    shortname: "CC",
+    shortname: "COC",
     programs: [
       {
         name: "Bachelor of Science in Criminology",

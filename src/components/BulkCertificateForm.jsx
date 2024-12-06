@@ -3,10 +3,10 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { createNotification } from "../utils/notifications";
 
-export default function BulkCertificateForm({ userData }) {
+export default function BulkCertificateForm({ userData, revalidate }) {
   const [form, setForm] = useState({
     reason: "",
-    requestors: [{ firstname: "", lastname: "" }],
+    requestors: [{ id: "", firstname: "", lastname: "", status: "Pending" }],
   });
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -24,7 +24,10 @@ export default function BulkCertificateForm({ userData }) {
   const handleAddRequestor = () => {
     setForm((prevForm) => ({
       ...prevForm,
-      requestors: [...prevForm.requestors, { firstname: "", lastname: "" }],
+      requestors: [
+        ...prevForm.requestors,
+        { id: "", firstname: "", lastname: "", status: "Pending" },
+      ],
     }));
   };
 
@@ -41,7 +44,7 @@ export default function BulkCertificateForm({ userData }) {
 
     if (
       !form.reason ||
-      form.requestors.some((r) => !r.firstname || !r.lastname)
+      form.requestors.some((r) => !r.firstname || !r.lastname || !r.id)
     ) {
       alert("Please fill out all fields for each requestor.");
       return;
@@ -78,6 +81,7 @@ export default function BulkCertificateForm({ userData }) {
       console.error("Error submitting bulk certificate request: ", error);
       alert("Failed to submit the bulk certificate request. Please try again.");
     } finally {
+      revalidate();
       setLoading(false);
     }
   };
@@ -110,6 +114,22 @@ export default function BulkCertificateForm({ userData }) {
         {form.requestors.map((requestor, index) => (
           <div key={index} className="mb-4">
             <div className="flex space-x-4">
+              <div className="flex-1">
+                <label
+                  htmlFor={`id-${index}`}
+                  className="block text-gray-700 font-medium"
+                >
+                  ID
+                </label>
+                <input
+                  type="text"
+                  id={`id-${index}`}
+                  name="id"
+                  value={requestor.id}
+                  onChange={(e) => handleChange(e, index)}
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
               <div className="flex-1">
                 <label
                   htmlFor={`firstname-${index}`}

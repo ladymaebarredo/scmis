@@ -93,7 +93,9 @@ function Appointee({ user }) {
 
   useEffect(() => {
     const activeAppointment = appointments.find(
-      (appointment) => appointment.appointmentStatus === "Pending"
+      (appointment) =>
+        appointment.appointmentStatus === "Pending" ||
+        appointment.appointmentStatus === "Approved"
     );
     setActiveAppointment(activeAppointment);
   }, [appointments]);

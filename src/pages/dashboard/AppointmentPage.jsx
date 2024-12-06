@@ -38,7 +38,6 @@ export default function AppointmentPage() {
 
   if (loading) return <LoadingPage />;
   if (!appointment) return <div className="p-6">Appointment not found!</div>;
-  console.log(appointment);
 
   return (
     <div className="w-full p-6 bg-gray-50 rounded-lg shadow-md">

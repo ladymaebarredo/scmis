@@ -66,73 +66,50 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AppointmentsReport = ({
-  appointments,
-  workerType,
-  fromDate,
-  toDate,
-  college,
-}) => {
-  // Filtered appointment title
-  const workerTitle = workerType
-    ? `${workerType} Appointments`
-    : "All Appointments";
+export const InventoryReport = ({ data, type, from, to }) => {
+  // Filtered type display logic
+  const typeTitle = type !== "" ? `Type: ${type}` : "All Types";
 
   // Date range display logic
-  const dateRange =
-    fromDate && toDate ? `${fromDate} to ${toDate}` : "From * to *";
-
-  // College display logic
-  const collegeTitle = college ? `From ${college}` : "From All Colleges";
+  const dateRange = from && to ? `${from} to ${to}` : "From * to *";
 
   return (
     <Document>
       <Page style={styles.page}>
         <View style={styles.section}>
           <Text style={styles.title}>St. Peter's College Clinic</Text>
+          <Text style={styles.title}>Distributed Items Inventory Report</Text>
 
           {/* Filter summary */}
           <Text style={styles.filterSummary}>
-            {workerTitle} | {collegeTitle} | {dateRange}
+            {typeTitle} | {dateRange}
           </Text>
 
           {/* Table */}
           <View style={styles.table}>
             {/* Table Header */}
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.tableHeader]}>Status</Text>
               <Text style={[styles.tableCell, styles.tableHeader]}>Type</Text>
               <Text style={[styles.tableCell, styles.tableHeader]}>
-                Appointee
+                Given To
               </Text>
-              <Text style={[styles.tableCell, styles.tableHeader]}>
-                College
-              </Text>
-              <Text style={[styles.tableCell, styles.tableHeader]}>
-                Date & Time
-              </Text>
+              <Text style={[styles.tableCell, styles.tableHeader]}>Date</Text>
+              <Text style={[styles.tableCell, styles.tableHeader]}>Items</Text>
             </View>
 
             {/* Table Rows */}
-            {appointments.map((appointment, index) => (
+            {data.map((record, index) => (
               <View
-                style={[
-                  styles.tableRow,
-                  index % 2 === 0 && styles.tableRowAlt, // Alternate row colors
-                ]}
-                key={appointment.id}
+                style={[styles.tableRow, index % 2 === 0 && styles.tableRowAlt]}
+                key={index}
               >
+                <Text style={styles.tableCell}>{record.type}</Text>
+                <Text style={styles.tableCell}>{record.givenTo}</Text>
+                <Text style={styles.tableCell}>{record.dateGiven}</Text>
                 <Text style={styles.tableCell}>
-                  {appointment.appointmentStatus}
-                </Text>
-                <Text style={styles.tableCell}>{appointment.workerType}</Text>
-                <Text style={styles.tableCell}>{appointment.appointee}</Text>
-                <Text style={styles.tableCell}>
-                  {appointment.appointeeCollege}
-                </Text>
-                <Text style={styles.tableCell}>
-                  {appointment.selectedDate} {appointment.selectedTime} (
-                  {appointment.selectedDay})
+                  {record.items
+                    .map((item) => `${item.itemName} (x${item.quantity})`)
+                    .join(", ")}
                 </Text>
               </View>
             ))}

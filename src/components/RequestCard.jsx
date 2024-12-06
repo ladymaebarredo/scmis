@@ -1,5 +1,6 @@
 import { format } from "date-fns"; // To format the date
 import { Clock, User, Info } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function RequestCard({ request }) {
   const { id, createdAt, reason, employeeName, status } = request;
@@ -40,13 +41,22 @@ export default function RequestCard({ request }) {
         <Info className="w-5 h-5 mt-1" />
         <p>Reason: {reason}</p>
       </div>
-      <div className="mt-4">
-        <button
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
-          onClick={() => console.log(`Viewing details for Request ID: ${id}`)}
+
+      {status === "Approved" && (
+        <div className="mt-4 text-gray-600">
+          <h3 className="text-sm font-semibold">To Be Claimed</h3>
+          <p className="text-xs">Weekdays: Anytime</p>
+          <p className="text-xs">Time: 9:00 AM - 5:00 PM</p>
+        </div>
+      )}
+
+      <div className="mt-4 w-full flex">
+        <Link
+          to={`/dashboard/requests/${request.id}`}
+          className="w-fit bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition mx-auto"
         >
           View Details
-        </button>
+        </Link>
       </div>
     </div>
   );

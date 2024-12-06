@@ -24,7 +24,7 @@ export default function Meds() {
 
   useEffect(() => {
     const activeRequest = requests.find(
-      (request) => request.status === "Pending"
+      (request) => request.status === "Pending" || request.status === "Approved"
     );
     setActiveRequest(activeRequest);
   }, [requests]);

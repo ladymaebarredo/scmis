@@ -57,7 +57,7 @@ export const createAppointment = async (
       userId,
       appointee: fullname,
       appointeeCollege: college,
-      appointmentStatus: workerType == "WALKIN" ? "Approved" : "Pending",
+      appointmentStatus: workerType == "Nurse" ? "Approved" : "Pending",
       createdAt: serverTimestamp(),
     });
 

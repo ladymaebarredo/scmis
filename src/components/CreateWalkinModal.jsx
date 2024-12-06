@@ -3,6 +3,7 @@ import { useState } from "react";
 import { createAppointment } from "../utils/appointment";
 import { createNotification } from "../utils/notifications";
 import { serverTimestamp } from "firebase/firestore";
+import { format, parseISO } from "date-fns";
 
 export function CreateWalkinModal({ onClose, revalidate }) {
   const { userData } = useUser();
@@ -12,6 +13,7 @@ export function CreateWalkinModal({ onClose, revalidate }) {
   const [course, setCourse] = useState("");
   const [yearLevel, setYearLevel] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("09:00"); // Default time
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,6 +25,7 @@ export function CreateWalkinModal({ onClose, revalidate }) {
       !course ||
       !yearLevel ||
       !selectedDate ||
+      !selectedTime ||
       !message
     ) {
       setError("Please fill in all fields.");
@@ -33,13 +36,16 @@ export function CreateWalkinModal({ onClose, revalidate }) {
     setLoading(true);
 
     try {
+      // Format the selected date and time
+      const formattedDate = format(parseISO(selectedDate), "yyyy-MM-dd");
+
       const res = await createAppointment(
-        "WALKIN",
+        "Nurse",
         "Nurse", // No worker for walk-ins
         message,
-        "TODAY", // No specific day
-        serverTimestamp(),
-        selectedDate,
+        format(parseISO(formattedDate), "EEEE"), // Change to day of the week e.g Monday
+        selectedTime, // Use formatted date + time
+        formattedDate,
         studentId,
         name,
         course
@@ -128,6 +134,19 @@ export function CreateWalkinModal({ onClose, revalidate }) {
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Time Picker */}
+        <div className="mt-4">
+          <label className="block text-sm font-semibold text-gray-700">
+            Appointment Time:
+          </label>
+          <input
+            type="time"
+            value={selectedTime}
+            onChange={(e) => setSelectedTime(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

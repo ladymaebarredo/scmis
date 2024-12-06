@@ -22,6 +22,8 @@ export default function RequestPage() {
       const request = await getRequestsById(id);
       setRequest(request);
       setStatus(request.status); // Set the initial status
+      console.log(request);
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching request:", error);
@@ -112,7 +114,10 @@ export default function RequestPage() {
         </div>
 
         <div className="border-t border-gray-200 pt-6">
-          <MedkitItems />
+          <MedkitItems
+            initialItems={request.medkitItems || []}
+            requestId={request.id}
+          />
         </div>
       </div>
     </div>

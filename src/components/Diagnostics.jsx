@@ -5,7 +5,12 @@ import { useUser } from "../providers/UserProvider";
 
 export function Diagnostics({ appointmentId, workerType }) {
   const [medicines, setMedicines] = useState([]);
-  const [diagnostic, setDiagnostic] = useState({ message: "", medicines: [] });
+  const [diagnostic, setDiagnostic] = useState({
+    message: "",
+    medicines: [],
+    bloodPressure: "",
+    temperature: "",
+  });
   const [selectedMedicine, setSelectedMedicine] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -71,7 +76,9 @@ export function Diagnostics({ appointmentId, workerType }) {
       await assignDiagnostic(
         appointmentId,
         diagnostic.message,
-        diagnostic.medicines
+        diagnostic.medicines,
+        diagnostic.bloodPressure,
+        diagnostic.temperature
       );
       alert("Saved");
     } catch (error) {}
@@ -93,6 +100,59 @@ export function Diagnostics({ appointmentId, workerType }) {
             className="w-full h-24 p-2 border border-gray-300 rounded-md mb-4"
             placeholder="Enter diagnostic message..."
           />
+          {/* Blood Pressure and Temperature Section */}
+          <section className="mb-8 p-6 bg-white shadow-lg rounded-lg border border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800 mb-6">
+              Vital Signs
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Blood Pressure */}
+              <div className="flex flex-col">
+                <label
+                  htmlFor="bloodPressure"
+                  className="text-sm font-medium text-gray-700 mb-2"
+                >
+                  Blood Pressure
+                </label>
+                <input
+                  type="text"
+                  id="bloodPressure"
+                  className="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                  placeholder="Enter blood pressure"
+                  value={diagnostic.bloodPressure}
+                  onChange={(e) =>
+                    setDiagnostic({
+                      ...diagnostic,
+                      bloodPressure: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              {/* Temperature */}
+              <div className="flex flex-col">
+                <label
+                  htmlFor="temperature"
+                  className="text-sm font-medium text-gray-700 mb-2"
+                >
+                  Temperature
+                </label>
+                <input
+                  type="text"
+                  id="temperature"
+                  className="p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                  placeholder="Enter temperature"
+                  value={diagnostic.temperature}
+                  onChange={(e) =>
+                    setDiagnostic({
+                      ...diagnostic,
+                      temperature: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+          </section>
           {/* Medicines section */}
           {workerType !== "Dentist" && (
             <>

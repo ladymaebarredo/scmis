@@ -1,37 +1,23 @@
 import { useState, useEffect } from "react";
 import { useUser } from "../providers/UserProvider";
+import { getItems } from "../utils/inventory";
+import { updateMedkitItems } from "../utils/request";
 
-export function MedkitItems() {
-  const [medkitItems, setMedkitItems] = useState([]);
+export function MedkitItems({ initialItems, requestId }) {
+  const [medkitItems, setMedkitItems] = useState(initialItems);
   const [selectedMedicine, setSelectedMedicine] = useState("");
   const [quantity, setQuantity] = useState(1);
 
+  const [items, setItems] = useState([]);
+
+  async function fetchItems() {
+    setItems(await getItems());
+  }
+
   const { user } = useUser();
 
-  // Static list of items
-  const items = [
-    { id: 1, name: "Paracetamol" },
-    { id: 2, name: "Ibuprofen" },
-    { id: 3, name: "Amoxicillin" },
-    { id: 4, name: "Cetirizine" },
-    { id: 5, name: "Antihistamine" },
-    { id: 6, name: "Thermometer" },
-    { id: 7, name: "Face Mask" },
-    { id: 8, name: "Hand Sanitizer" },
-    { id: 9, name: "Bandage" },
-    { id: 10, name: "Gloves" },
-  ];
-
-  // Example of initial items (could be fetched from an API or hardcoded)
-  const initialMedkitItems = [
-    { name: "Paracetamol", quantity: 5 },
-    { name: "Ibuprofen", quantity: 2 },
-    { name: "Thermometer", quantity: 1 },
-  ];
-
   useEffect(() => {
-    // Initialize medkitItems with default items on mount
-    setMedkitItems(initialMedkitItems);
+    fetchItems();
   }, []);
 
   const handleAddItem = () => {
@@ -64,6 +50,11 @@ export function MedkitItems() {
     setMedkitItems((prev) => prev.filter((item) => item.name !== name));
   };
 
+  const handleSave = async () => {
+    await updateMedkitItems(requestId, medkitItems);
+    alert("Saved");
+  };
+
   return (
     <section className="mt-6">
       <h2 className="text-xl font-semibold mb-4">Medkit Items</h2>
@@ -76,8 +67,8 @@ export function MedkitItems() {
           >
             <option value="">Select Item</option>
             {items.map((item) => (
-              <option key={item.id} value={item.name}>
-                {item.name}
+              <option key={item.id} value={item.itemName} className="p-5">
+                {item.itemName} x {item.quantity} ({item.itemType})
               </option>
             ))}
           </select>
@@ -128,6 +119,14 @@ export function MedkitItems() {
           ))
         )}
       </div>
+      {user?.data?.role === "WORKER" && (
+        <button
+          onClick={() => handleSave()}
+          className="w-full bg-blue-500 text-white p-2 rounded-lg"
+        >
+          Save
+        </button>
+      )}
     </section>
   );
 }
