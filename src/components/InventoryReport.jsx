@@ -61,6 +61,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#333", // Darker text for better readability
   },
+  items: {
+    padding: 8,
+    flex: 1,
+    textAlign: "center", // Centered text in cells
+    fontSize: 6,
+    color: "#333", // Darker text for better readability
+  },
   tableRowAlt: {
     backgroundColor: "#f9f9f9", // Alternating row color for better contrast
   },
@@ -106,7 +113,7 @@ export const InventoryReport = ({ data, type, from, to }) => {
                 <Text style={styles.tableCell}>{record.type}</Text>
                 <Text style={styles.tableCell}>{record.givenTo}</Text>
                 <Text style={styles.tableCell}>{record.dateGiven}</Text>
-                <Text style={styles.tableCell}>
+                <Text style={styles.items}>
                   {record.items
                     .map((item) => `${item.itemName} (x${item.quantity})`)
                     .join(", ")}
