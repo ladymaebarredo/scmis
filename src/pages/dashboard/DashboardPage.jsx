@@ -6,6 +6,7 @@ import {
   LayoutDashboardIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom"; // Import Link for navigation
+import { Calendar } from "../../components/Calendar";
 
 export default function DashboardPage() {
   const { user, userData } = useUser();
@@ -67,6 +68,9 @@ export default function DashboardPage() {
           </div>
         </Link>
       </div>
+      <section className="bg-white rounded-md drop-shadow-lg p-10 mt-10">
+        <Calendar />
+      </section>
     </main>
   );
 }

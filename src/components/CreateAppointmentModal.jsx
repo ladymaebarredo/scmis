@@ -247,12 +247,13 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
             <div className="mt-6 text-center space-x-4 flex justify-end">
               <button
                 onClick={handleSubmit}
-                disabled={loading}
-                className="btn bg-blue-600 text-white hover:bg-blue-700 p-2 rounded-md"
+                disabled={loading || slots === 0}
+                className={`btn bg-blue-600 text-white hover:bg-blue-700 p-2 rounded-md ${
+                  loading || slots === 0 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 {loading ? "Submitting..." : "Submit"}
               </button>
-
               <button
                 onClick={handleCancel}
                 className="btn bg-gray-600 text-white hover:bg-gray-700 p-2 rounded-md"

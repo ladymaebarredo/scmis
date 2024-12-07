@@ -15,7 +15,6 @@ export default function BulkPage() {
   const [bulk, setBulk] = useState(null); // State for bulk details
   const [loading, setLoading] = useState(true); // Loading state
   const [status, setStatus] = useState(""); // Status state
-  const [toBeClaimed, setToBeClaimed] = useState(null); // To Be Claimed Date
   const [appointmentDate, setAppointmentDate] = useState(null); // Appointment Date
   const [remarks, setRemarks] = useState(""); // Remarks
   const navigate = useNavigate(); // Navigation for redirecting
@@ -32,7 +31,6 @@ export default function BulkPage() {
           const data = docSnap.data();
           setBulk(data);
           setStatus(data.status); // Set the initial status
-          setToBeClaimed(data.toBeClaimed);
           setAppointmentDate(data.appointmentDate);
           setRemarks(data.remarks || ""); // Initialize remarks if not present
         } else {
@@ -88,7 +86,6 @@ export default function BulkPage() {
     try {
       const docRef = doc(db, "bulkCertificate", id);
       await updateDoc(docRef, { [field]: value }); // Update Firestore field
-      if (field === "toBeClaimed") setToBeClaimed(value);
       if (field === "appointmentDate") setAppointmentDate(value);
     } catch (error) {
       console.error(`Error updating ${field}:`, error);
@@ -154,20 +151,6 @@ export default function BulkPage() {
           {status === "Approved" && user.data?.role === "WORKER" ? (
             <>
               <div className="my-4">
-                <label htmlFor="toBeClaimed" className="block font-medium">
-                  To Be Claimed:
-                </label>
-                <input
-                  type="datetime-local"
-                  id="toBeClaimed"
-                  value={toBeClaimed || ""}
-                  onChange={(e) =>
-                    handleDateUpdate("toBeClaimed", e.target.value)
-                  }
-                  className="border rounded px-2 py-1"
-                />
-              </div>
-              <div className="my-4">
                 <label htmlFor="appointmentDate" className="block font-medium">
                   Appointment Date:
                 </label>
@@ -184,12 +167,6 @@ export default function BulkPage() {
             </>
           ) : (
             <>
-              <p>
-                <strong>To Be Claimed:</strong>{" "}
-                {toBeClaimed
-                  ? new Date(toBeClaimed).toLocaleString()
-                  : "Not set"}
-              </p>
               <p>
                 <strong>Appointment Date:</strong>{" "}
                 {appointmentDate

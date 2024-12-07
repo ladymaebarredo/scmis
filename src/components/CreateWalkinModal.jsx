@@ -41,7 +41,7 @@ export function CreateWalkinModal({ onClose, revalidate }) {
 
       const res = await createAppointment(
         "Nurse",
-        "Nurse", // No worker for walk-ins
+        userData.id,
         message,
         format(parseISO(formattedDate), "EEEE"), // Change to day of the week e.g Monday
         selectedTime, // Use formatted date + time

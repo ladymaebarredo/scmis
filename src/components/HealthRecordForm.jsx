@@ -35,7 +35,7 @@ export const HealthRecordForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      await assignRecord(data, userData.id);
+      await assignRecord(data, userData.id, userData.studentId);
       fetchRecord();
       alert("Saved!");
     } catch (error) {}

@@ -65,16 +65,16 @@ export function AppointmentCard({ appointment, revalidate }) {
           {new Date(appointment.createdAt.seconds * 1000).toLocaleString()}
         </p>
       </div>
-      {(appointment.appointmentStatus !== "Canceled" ||
-        appointment.appointmentStatus !== "Approved") && (
-        <button
-          onClick={handleCancelAppointment}
-          disabled={canceling}
-          className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
-        >
-          {canceling ? "Canceling..." : "Cancel Appointment"}
-        </button>
-      )}
+      {appointment.appointmentStatus !== "Canceled" &&
+        appointment.appointmentStatus !== "Approved" && (
+          <button
+            onClick={handleCancelAppointment}
+            disabled={canceling}
+            className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
+          >
+            {canceling ? "Canceling..." : "Cancel Appointment"}
+          </button>
+        )}
     </div>
   );
 }

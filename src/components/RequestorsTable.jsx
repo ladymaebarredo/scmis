@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ViewHealthRecord from "./ViewHealthRecord";
 
 export default function RequestorsTable({
   requestors,
@@ -66,6 +67,7 @@ export default function RequestorsTable({
               <th className="border border-gray-300 px-4 py-2">ID</th>
               <th className="border border-gray-300 px-4 py-2">Name</th>
               <th className="border border-gray-300 px-4 py-2">Status</th>
+              <th className="border border-gray-300 px-4 py-2">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -97,6 +99,9 @@ export default function RequestorsTable({
                     {requestor.status}
                   </td>
                 )}
+                <td className="border border-gray-300 px-4 py-2">
+                  <ViewHealthRecord studentId={requestor.id} />
+                </td>
               </tr>
             ))}
           </tbody>
