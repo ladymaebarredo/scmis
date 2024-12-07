@@ -217,9 +217,12 @@ export default function BulkPage() {
               </button>
             </div>
           ) : (
-            <p>
-              <strong>Remarks:</strong> {remarks || "No remarks provided"}
-            </p>
+            <div>
+              <p>
+                <strong>Remarks:</strong>
+              </p>
+              <pre>{remarks || "No remarks provided"}</pre>
+            </div>
           )}
         </div>
       )}
