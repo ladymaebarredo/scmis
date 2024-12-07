@@ -155,6 +155,7 @@ export function Calendar() {
 
   const fetchAppointments = async () => {
     try {
+      setLoading(true);
       let appointments;
 
       if (user.data.role == "WORKER") {
@@ -177,12 +178,15 @@ export function Calendar() {
       setEvents(formattedAppointments);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchBulkRequests = async () => {
     if (user.data.role != "WORKER") return;
     try {
+      setLoading(true);
       const bulk = await getAllBulk(); // Assuming you have a function to fetch bulk data
       const formattedBulk = bulk.map((appointment) => {
         return {
