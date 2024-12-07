@@ -73,9 +73,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export const InventoryReport = ({ data, type, from, to }) => {
+export const InventoryReport = ({ data, type, from, to, college }) => {
   // Filtered type display logic
   const typeTitle = type !== "" ? `Type: ${type}` : "All Types";
+
+  // College display logic
+  const collegeTitle = college ? `From ${college}` : "From All Colleges";
 
   // Date range display logic
   const dateRange = from && to ? `${from} to ${to}` : "From * to *";
@@ -89,7 +92,7 @@ export const InventoryReport = ({ data, type, from, to }) => {
 
           {/* Filter summary */}
           <Text style={styles.filterSummary}>
-            {typeTitle} | {dateRange}
+            {typeTitle} | {collegeTitle} | {dateRange}
           </Text>
 
           {/* Table */}

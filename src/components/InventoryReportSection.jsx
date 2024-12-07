@@ -19,8 +19,10 @@ export default function InventoryReportSection() {
   const [type, setType] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [employeeCollege, setEmployeeCollege] = useState(""); // New state for college filter
 
   const types = ["Diagnostics", "Medkit Request"];
+  const colleges = ["CCS", "COC", "CAS", "CED"]; // Add your available college options here
 
   const fetchDiagnostics = async () => {
     try {
@@ -34,6 +36,7 @@ export default function InventoryReportSection() {
             return {
               type: "Diagnostics",
               givenTo: appointment?.appointee || "Unknown",
+              college: appointment.appointeeCollege,
               dateGiven: new Date(
                 diagnostic.createdAt.seconds * 1000
               ).toLocaleString(),
@@ -69,6 +72,7 @@ export default function InventoryReportSection() {
             itemName: item.name,
             quantity: item.quantity,
           })),
+          college: request.employeeCollege, // Include employee college
         }));
 
       setItemsGiven((prevItemsGiven) => [...prevItemsGiven, ...medkitData]);
@@ -106,6 +110,13 @@ export default function InventoryReportSection() {
       filtered = filtered.filter((item) => item.type === type);
     }
 
+    // Filter by college (substring match)
+    if (employeeCollege) {
+      filtered = filtered.filter((item) =>
+        item.college.includes(employeeCollege)
+      );
+    }
+
     if (fromDate && toDate) {
       const from = new Date(fromDate);
       const to = new Date(toDate);
@@ -120,16 +131,15 @@ export default function InventoryReportSection() {
 
   useEffect(() => {
     handleFilter();
-  }, [type, fromDate, toDate, itemsGiven]);
+  }, [type, employeeCollege, fromDate, toDate, itemsGiven]);
 
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Inventory Report</h2>
-
       {/* Filter Section */}
-      <div className="mb-4 grid grid-cols-3 gap-4">
+      <div className="mb-4 grid grid-cols-4 gap-4">
         <div>
           <label className="block text-sm font-medium mb-2">Type</label>
           <select
@@ -141,6 +151,22 @@ export default function InventoryReportSection() {
             {types.map((t) => (
               <option key={t} value={t}>
                 {t}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">College</label>
+          <select
+            value={employeeCollege}
+            onChange={(e) => setEmployeeCollege(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          >
+            <option value="">All Colleges</option>
+            {colleges.map((collegeOption) => (
+              <option key={collegeOption} value={collegeOption}>
+                {collegeOption}
               </option>
             ))}
           </select>
@@ -168,7 +194,7 @@ export default function InventoryReportSection() {
       </div>
 
       {/* Report Section */}
-      {filteredItemsGiven.length == 0 ? (
+      {filteredItemsGiven.length === 0 ? (
         <section className="p-10">No Data Found</section>
       ) : (
         <PDFViewer className="w-full h-screen">
@@ -177,6 +203,7 @@ export default function InventoryReportSection() {
             type={type}
             from={fromDate}
             to={toDate}
+            college={employeeCollege}
           />
         </PDFViewer>
       )}

@@ -14,7 +14,12 @@ import {
 
 import { createNotification } from "./notifications";
 
-export const createMedkitRequest = async (employeeId, reason, name) => {
+export const createMedkitRequest = async (
+  employeeId,
+  employeeCollege,
+  reason,
+  name
+) => {
   try {
     const requestRef = collection(db, "requests");
     const q = query(
@@ -36,6 +41,7 @@ export const createMedkitRequest = async (employeeId, reason, name) => {
       employeeId,
       reason,
       employeeName: name,
+      employeeCollege,
       status: "Pending",
       items: [],
       createdAt: serverTimestamp(),

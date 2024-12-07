@@ -49,6 +49,7 @@ export default function Meds() {
       </div>
       <MedkitRequest
         employeeId={userData.id}
+        employeeCollege={userData.assignment}
         name={`${userData.firstname} ${userData.lastname}`}
         revalidate={fetchRequests}
       />

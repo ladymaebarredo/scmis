@@ -15,6 +15,9 @@ export default function BulkPage() {
   const [bulk, setBulk] = useState(null); // State for bulk details
   const [loading, setLoading] = useState(true); // Loading state
   const [status, setStatus] = useState(""); // Status state
+  const [toBeClaimed, setToBeClaimed] = useState(null); // To Be Claimed Date
+  const [appointmentDate, setAppointmentDate] = useState(null); // Appointment Date
+  const [remarks, setRemarks] = useState(""); // Remarks
   const navigate = useNavigate(); // Navigation for redirecting
 
   // Fetch the bulk details
@@ -29,6 +32,9 @@ export default function BulkPage() {
           const data = docSnap.data();
           setBulk(data);
           setStatus(data.status); // Set the initial status
+          setToBeClaimed(data.toBeClaimed);
+          setAppointmentDate(data.appointmentDate);
+          setRemarks(data.remarks || ""); // Initialize remarks if not present
         } else {
           console.error("Bulk document not found");
           navigate("/404"); // Redirect if not found
@@ -78,6 +84,27 @@ export default function BulkPage() {
     }
   };
 
+  const handleDateUpdate = async (field, value) => {
+    try {
+      const docRef = doc(db, "bulkCertificate", id);
+      await updateDoc(docRef, { [field]: value }); // Update Firestore field
+      if (field === "toBeClaimed") setToBeClaimed(value);
+      if (field === "appointmentDate") setAppointmentDate(value);
+    } catch (error) {
+      console.error(`Error updating ${field}:`, error);
+    }
+  };
+
+  const handleRemarksUpdate = async () => {
+    try {
+      const docRef = doc(db, "bulkCertificate", id);
+      await updateDoc(docRef, { remarks: remarks }); // Update remarks in Firestore
+      alert("Remarks Saved");
+    } catch (error) {
+      console.error("Error updating remarks:", error);
+    }
+  };
+
   // Filtering approved requestors
   const approvedRequestors = bulk?.requestors.filter(
     (requestor) => requestor.status === "Approved"
@@ -124,10 +151,74 @@ export default function BulkPage() {
             <strong>Created At:</strong>{" "}
             {new Date(bulk.dateCreated?.seconds * 1000).toLocaleString()}
           </p>
-          {status == "Approved" && (
+          {status === "Approved" && user.data?.role === "WORKER" ? (
+            <>
+              <div className="my-4">
+                <label htmlFor="toBeClaimed" className="block font-medium">
+                  To Be Claimed:
+                </label>
+                <input
+                  type="datetime-local"
+                  id="toBeClaimed"
+                  value={toBeClaimed || ""}
+                  onChange={(e) =>
+                    handleDateUpdate("toBeClaimed", e.target.value)
+                  }
+                  className="border rounded px-2 py-1"
+                />
+              </div>
+              <div className="my-4">
+                <label htmlFor="appointmentDate" className="block font-medium">
+                  Appointment Date:
+                </label>
+                <input
+                  type="datetime-local"
+                  id="appointmentDate"
+                  value={appointmentDate || ""}
+                  onChange={(e) =>
+                    handleDateUpdate("appointmentDate", e.target.value)
+                  }
+                  className="border rounded px-2 py-1"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <p>
+                <strong>To Be Claimed:</strong>{" "}
+                {toBeClaimed
+                  ? new Date(toBeClaimed).toLocaleString()
+                  : "Not set"}
+              </p>
+              <p>
+                <strong>Appointment Date:</strong>{" "}
+                {appointmentDate
+                  ? new Date(appointmentDate).toLocaleString()
+                  : "Not set"}
+              </p>
+            </>
+          )}
+          {user.data?.role === "WORKER" ? (
+            <div className="my-4">
+              <label htmlFor="remarks" className="block font-medium">
+                Remarks:
+              </label>
+              <textarea
+                id="remarks"
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+                className="border rounded px-2 py-1 w-full"
+              />
+              <button
+                className="w-full p-2 bg-blue-500 text-white"
+                onClick={handleRemarksUpdate}
+              >
+                Save Remarks
+              </button>
+            </div>
+          ) : (
             <p>
-              <strong>To Be Claimed:</strong>
-              {" Week Days (8 AM to 5PM)"}
+              <strong>Remarks:</strong> {remarks || "No remarks provided"}
             </p>
           )}
         </div>
@@ -139,7 +230,7 @@ export default function BulkPage() {
         userRole={user.data.role}
         onUpdateStatus={updateRequestorStatus}
       />
-      {approvedRequestors.length != 0 && user.data?.role === "WORKER" && (
+      {approvedRequestors.length !== 0 && user.data?.role === "WORKER" && (
         <PDFViewer className="w-full h-screen mt-6">
           <BulkMedicalCertificate recipients={approvedRequestors} />
         </PDFViewer>

@@ -81,7 +81,9 @@ export default function RequestPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h2 className="text-lg font-semibold">Employee Name</h2>
-              <p className="text-gray-600">{request.employeeName}</p>
+              <p className="text-gray-600">
+                {request.employeeName} ({request.employeeCollege})
+              </p>
             </div>
             <div>
               <h2 className="text-lg font-semibold">Request Status</h2>

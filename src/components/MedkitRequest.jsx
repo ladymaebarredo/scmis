@@ -2,7 +2,12 @@ import { useState } from "react";
 import { createMedkitRequest } from "../utils/request";
 import { createNotification } from "../utils/notifications";
 
-export default function MedkitRequest({ employeeId, name, revalidate }) {
+export default function MedkitRequest({
+  employeeId,
+  employeeCollege,
+  name,
+  revalidate,
+}) {
   const [formData, setFormData] = useState({
     reason: "",
     employeeId,
@@ -17,7 +22,12 @@ export default function MedkitRequest({ employeeId, name, revalidate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await createMedkitRequest(employeeId, formData.reason, name);
+    await createMedkitRequest(
+      employeeId,
+      employeeCollege,
+      formData.reason,
+      name
+    );
     console.log("Form submitted:", formData);
     setSubmitted(true);
     revalidate();
