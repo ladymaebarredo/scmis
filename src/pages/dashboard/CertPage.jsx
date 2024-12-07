@@ -47,7 +47,7 @@ export default function CertPage() {
       await createNotification(
         userData.id, // Nurse ID
         request.userId,
-        `Nurse ${status} your certificate request.`,
+        `${userData.workerType} ${status} your certificate request.`,
         `/dashboard/certificate`
       );
       alert("Status updated successfully!");

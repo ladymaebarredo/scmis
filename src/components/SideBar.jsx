@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { appointeelinks, nurseLinks, workerLinks } from "../utils/globals";
+import {
+  appointeelinks,
+  nurseLinks,
+  physicianLinks,
+  workerLinks,
+} from "../utils/globals";
 import { UserButton } from "./UserButton";
 import { SignoutButton } from "./SignoutButton";
 import {
@@ -23,6 +28,8 @@ export function SideBar() {
     case "WORKER":
       if (userData.workerType == "Nurse") {
         slinks = nurseLinks;
+      } else if (userData.workerType == "Physician") {
+        slinks = physicianLinks;
       } else {
         slinks = workerLinks;
       }

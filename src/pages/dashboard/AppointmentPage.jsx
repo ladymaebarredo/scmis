@@ -26,6 +26,12 @@ export default function AppointmentPage() {
       `${userData.workerType} ${status} your appointment.`,
       `/dashboard/appointments/${appointment.id}`
     );
+    await createNotification(
+      user.id,
+      appointment.workerId,
+      `Nurse ${status} an appointment for you.`,
+      `/dashboard/appointments/${appointment.id}`
+    );
   };
 
   const fetchAppointment = async () => {

@@ -30,6 +30,12 @@ export const nurseLinks = [
   { tag: "Reports", href: "/dashboard/reports", icon: Megaphone },
 ];
 
+export const physicianLinks = [
+  { tag: "Dashboard", href: "/dashboard", icon: ChartAreaIcon },
+  { tag: "Appointments", href: "/dashboard/appointments", icon: BookAIcon },
+  { tag: "Certificate", href: "/dashboard/certificate", icon: Paperclip },
+];
+
 export const workerLinks = [
   { tag: "Dashboard", href: "/dashboard", icon: ChartAreaIcon },
   { tag: "Appointments", href: "/dashboard/appointments", icon: BookAIcon },
