@@ -2,20 +2,21 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDJdyBas7IF4u-rb9cfahCtNHdYlKBfiCc",
-  authDomain: "hospital-e5b53.firebaseapp.com",
-  projectId: "hospital-e5b53",
-  storageBucket: "hospital-e5b53.firebasestorage.app",
-  messagingSenderId: "378597547006",
-  appId: "1:378597547006:web:ddf94890368f9846d4feaf",
+  apiKey: "AIzaSyBknNU2TGixvmIwX_isRFYFyzXm7G8hoaE",
+  authDomain: "oims-17cde.firebaseapp.com",
+  projectId: "oims-17cde",
+  storageBucket: "oims-17cde.appspot.com",
+  messagingSenderId: "920624302613",
+  appId: "1:920624302613:web:4d5ab2bc3f6e63e2d81c1c",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);

@@ -206,6 +206,7 @@ export default function BulkPage() {
 
       {/* Requestors Table */}
       <RequestorsTable
+        requestId={id}
         requestors={bulk.requestors}
         userRole={user.data.role}
         onUpdateStatus={updateRequestorStatus}

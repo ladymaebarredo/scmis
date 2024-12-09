@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import ViewHealthRecord from "./ViewHealthRecord";
+import { db, storage } from "../utils/firebase";
 
 export default function RequestorsTable({
+  requestId,
   requestors,
   userRole,
   onUpdateStatus,
@@ -28,6 +32,24 @@ export default function RequestorsTable({
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Handle file upload
+  const handleFileUpload = async (requestorId, file) => {
+    const fileRef = ref(
+      storage,
+      `attachedFiles/${requestId}/${requestorId}/${file.name}`
+    );
+    await uploadBytes(fileRef, file);
+    const downloadURL = await getDownloadURL(fileRef);
+
+    // Update the Firestore record
+    const requestDocRef = doc(db, "bulkCertificate", requestId);
+    const updatedRequestors = requestors.map((req) =>
+      req.id === requestorId ? { ...req, attachedFile: downloadURL } : req
+    );
+    await updateDoc(requestDocRef, { requestors: updatedRequestors });
+    window.location.reload();
+  };
 
   // Handle page change
   const handlePageChange = (page) => {
@@ -67,6 +89,9 @@ export default function RequestorsTable({
               <th className="border border-gray-300 px-4 py-2">ID</th>
               <th className="border border-gray-300 px-4 py-2">Name</th>
               <th className="border border-gray-300 px-4 py-2">Status</th>
+              <th className="border border-gray-300 px-4 py-2">
+                Attached File
+              </th>
               <th className="border border-gray-300 px-4 py-2">Action</th>
             </tr>
           </thead>
@@ -79,9 +104,8 @@ export default function RequestorsTable({
                 <td className="border border-gray-300 px-4 py-2">
                   {requestor.firstname} {requestor.lastname}
                 </td>
-
-                {userRole === "WORKER" ? (
-                  <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2">
+                  {userRole === "WORKER" ? (
                     <select
                       value={requestor.status}
                       onChange={(e) =>
@@ -93,12 +117,53 @@ export default function RequestorsTable({
                       <option value="Approved">Approved</option>
                       <option value="Declined">Declined</option>
                     </select>
-                  </td>
-                ) : (
-                  <td className="border border-gray-300 px-4 py-2">
-                    {requestor.status}
-                  </td>
-                )}
+                  ) : (
+                    requestor.status
+                  )}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {userRole === "WORKER" ? (
+                    <div>
+                      {/* File Upload */}
+                      <label className="block mb-1 text-sm font-medium text-gray-700">
+                        {requestor.attachedFile
+                          ? "Replace Attached File"
+                          : "Attach File"}
+                      </label>
+                      <input
+                        type="file"
+                        accept="application/pdf, image/*"
+                        onChange={(e) =>
+                          handleFileUpload(requestor.id, e.target.files[0])
+                        }
+                        className="mb-2"
+                      />
+
+                      {/* View Attached File */}
+                      {requestor.attachedFile && (
+                        <a
+                          href={requestor.attachedFile}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          View File
+                        </a>
+                      )}
+                    </div>
+                  ) : (
+                    requestor.attachedFile && (
+                      <a
+                        href={requestor.attachedFile}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                      >
+                        View File
+                      </a>
+                    )
+                  )}
+                </td>
                 <td className="border border-gray-300 px-4 py-2">
                   <ViewHealthRecord studentId={requestor.id} />
                 </td>
