@@ -116,3 +116,5 @@ export const offices = [
   { name: "Office of the College Dean", shortname: "DEAN" },
   { name: "Library", shortname: "LIB" },
 ];
+
+export const nurseId = "0SzxW0YhpUV9io3Fids1bB6BCKp2";

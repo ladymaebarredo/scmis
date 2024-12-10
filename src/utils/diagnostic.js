@@ -12,6 +12,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { createNotification } from "./notifications";
+import { nurseId } from "./globals";
 
 export const assignDiagnostic = async (
   appointmentId,
@@ -52,8 +53,8 @@ export const assignDiagnostic = async (
         if (newQuantity == 0) {
           console.log("no stock");
           await createNotification(
-            "o1jCIz3nAFaETuEvhmIWIIXjBJJ2",
-            "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+            nurseId,
+            nurseId, // Nurse ID
             `${itemName} has run out of stock!`,
             `/dashboard/inventory`
           );

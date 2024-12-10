@@ -21,6 +21,7 @@ import { Link } from "react-router-dom";
 import { getRecord } from "../../utils/record";
 import { LoadingPage } from "../LoadingPage";
 import { CreateWalkinModal } from "../../components/CreateWalkinModal";
+import { nurseId } from "../../utils/globals";
 
 export default function AppointmentsPage() {
   const { user, userData, loading } = useUser();
@@ -309,7 +310,7 @@ const Worker = ({ user, userData }) => {
     await fetchAppointments(); // Refresh appointments after status update
     await createNotification(
       user.id,
-      "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+      nurseId, // Nurse ID
       `${userData.workerType} ${status} an appointment.`,
       `/dashboard/appointments/${appointment.id}`
     );

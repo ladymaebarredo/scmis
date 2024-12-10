@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { createNotification } from "../utils/notifications";
+import { nurseId } from "../utils/globals";
 
 export default function BulkCertificateForm({ userData, revalidate }) {
   const [form, setForm] = useState({
@@ -73,7 +74,7 @@ export default function BulkCertificateForm({ userData, revalidate }) {
       // Create notification
       await createNotification(
         userData.id,
-        "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+        nurseId, // Nurse ID
         `${userData.lastname} requested a bulk certificate.`,
         `/dashboard/certificate/bulk/${bulkId}` // Use the bulkId in the notification link
       );

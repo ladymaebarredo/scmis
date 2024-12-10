@@ -3,6 +3,7 @@ import { useUser } from "../providers/UserProvider";
 import { db } from "../utils/firebase"; // Import Firestore instance
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"; // Firestore functions
 import { createNotification } from "../utils/notifications";
+import { nurseId } from "../utils/globals";
 
 export default function CertificateRequestForm({ revalidate }) {
   const { userData } = useUser();
@@ -34,7 +35,7 @@ export default function CertificateRequestForm({ revalidate }) {
 
       await createNotification(
         userData.id,
-        "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+        nurseId, // Nurse ID
         `${userData.lastname} requested an certificate.`,
         `/dashboard/certificate/${cert.id}`
       );

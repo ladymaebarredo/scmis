@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 
 import { createNotification } from "./notifications";
+import { nurseId } from "./globals";
 
 export const createMedkitRequest = async (
   employeeId,
@@ -49,7 +50,7 @@ export const createMedkitRequest = async (
 
     await createNotification(
       employeeId,
-      "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+      nurseId, // Nurse ID
       `${name} requested a medkit!`,
       `/dashboard/requests/${request.id}`
     );
@@ -142,7 +143,7 @@ export const updateMedkitRequestStatus = async (
     }
     if (notificationMessage) {
       await createNotification(
-        "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+        nurseId, // Nurse ID
         employeeId,
         notificationMessage,
         `/dashboard/requests/${requestId}`
@@ -191,8 +192,8 @@ export const updateMedkitItems = async (id, medkitItems) => {
         if (newQuantity == 0) {
           console.log("no stock");
           await createNotification(
-            "o1jCIz3nAFaETuEvhmIWIIXjBJJ2",
-            "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+            nurseId,
+            nurseId, // Nurse ID
             `${name} has run out of stock!`,
             `/dashboard/inventory`
           );

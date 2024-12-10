@@ -5,6 +5,7 @@ import { getWorkerByType } from "../utils/worker";
 import { getAvailability } from "../utils/availability";
 import { addDays, startOfWeek, format, subWeeks } from "date-fns";
 import { createNotification } from "../utils/notifications";
+import { nurseId } from "../utils/globals";
 
 export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
   const { userData } = useUser();
@@ -124,7 +125,7 @@ export function CreateAppointmentModal({ workerType, onClose, revalidate }) {
         onClose();
         await createNotification(
           userData.id,
-          "o1jCIz3nAFaETuEvhmIWIIXjBJJ2", // Nurse ID
+          nurseId, // Nurse ID
           `${userData.lastname} requested an appointment.`,
           `/dashboard/appointments/${res.message}`
         );
