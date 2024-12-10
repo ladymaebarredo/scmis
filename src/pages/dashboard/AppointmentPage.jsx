@@ -23,7 +23,7 @@ export default function AppointmentPage() {
     await createNotification(
       user.id,
       appointment.userId,
-      `${userData.workerType} ${status} your appointment.`,
+      `${userData.workerType} ${newStatus} your appointment.`,
       `/dashboard/appointments/${appointment.id}`
     );
     await createNotification(
