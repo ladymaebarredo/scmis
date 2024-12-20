@@ -231,7 +231,7 @@ const Nurse = ({ user }) => {
           <table className="min-w-full table-auto">
             <thead>
               <tr className="bg-gray-200 text-left">
-                <th className="px-4 py-2">ID</th>
+                <th className="px-4 py-2">Appointee</th>
                 <th className="px-4 py-2">Worker Type</th>
                 <th className="px-4 py-2">Message</th>
                 <th className="px-4 py-2">Status</th>
@@ -241,7 +241,7 @@ const Nurse = ({ user }) => {
             <tbody>
               {pendingAppointments.map((appointment) => (
                 <tr key={appointment.id} className="bg-white border-b">
-                  <td className="px-4 py-2">{appointment.id}</td>
+                  <td className="px-4 py-2">{appointment.appointee}</td>
                   <td className="px-4 py-2">{appointment.workerType}</td>
                   <td className="px-4 py-2">{appointment.message}</td>
                   <td className="px-4 py-2">{appointment.appointmentStatus}</td>

@@ -1,4 +1,5 @@
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
+import { getWorkerType } from "../utils/globals";
 
 // Define the styles for the document
 const styles = StyleSheet.create({
@@ -125,7 +126,9 @@ export const AppointmentsReport = ({
                 <Text style={styles.tableCell}>
                   {appointment.appointmentStatus}
                 </Text>
-                <Text style={styles.tableCell}>{appointment.workerType}</Text>
+                <Text style={styles.tableCell}>
+                  {getWorkerType(appointment.workerType)}
+                </Text>
                 <Text style={styles.tableCell}>{appointment.appointee}</Text>
                 <Text style={styles.tableCell}>
                   {appointment.appointeeCollege}

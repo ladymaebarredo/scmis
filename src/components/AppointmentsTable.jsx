@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { format } from "date-fns";
+import { format, isSameDay, isThisWeek } from "date-fns";
+import { getWorkerType } from "../utils/globals";
 
 export function AppointmentsTable({ appointments }) {
   const [statusFilter, setStatusFilter] = useState("All");
+  const [dateFilter, setDateFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleStatusChange = (e) => {
     setStatusFilter(e.target.value);
+  };
+
+  const handleDateFilterChange = (e) => {
+    setDateFilter(e.target.value);
   };
 
   const handleSearchChange = (e) => {
@@ -15,11 +21,21 @@ export function AppointmentsTable({ appointments }) {
   };
 
   const filteredAppointments = appointments
-    .filter((appointment) =>
-      statusFilter === "All"
-        ? true
-        : appointment.appointmentStatus === statusFilter
-    )
+    .filter((appointment) => {
+      if (statusFilter === "All") return true;
+      return appointment.appointmentStatus === statusFilter;
+    })
+    .filter((appointment) => {
+      if (dateFilter === "All") return true;
+      const appointmentDate = new Date(appointment.selectedDate);
+      if (dateFilter === "This Day") {
+        return isSameDay(appointmentDate, new Date());
+      }
+      if (dateFilter === "This Week") {
+        return isThisWeek(appointmentDate);
+      }
+      return true;
+    })
     .filter((appointment) =>
       appointment.appointee.toLowerCase().includes(searchQuery)
     );
@@ -44,6 +60,21 @@ export function AppointmentsTable({ appointments }) {
             <option value="Canceled">Canceled</option>
           </select>
         </div>
+        <div>
+          <label htmlFor="dateFilter" className="mr-2 font-semibold">
+            Filter by Date:
+          </label>
+          <select
+            id="dateFilter"
+            value={dateFilter}
+            onChange={handleDateFilterChange}
+            className="border p-2 rounded-lg"
+          >
+            <option value="All">All</option>
+            <option value="This Day">This Day</option>
+            <option value="This Week">This Week</option>
+          </select>
+        </div>
         <div className="mt-4 md:mt-0">
           <label htmlFor="searchQuery" className="mr-2 font-semibold">
             Search by Appointee:
@@ -63,7 +94,7 @@ export function AppointmentsTable({ appointments }) {
         <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
           <thead>
             <tr className="bg-gray-200">
-              <th className="p-2 border">Worker Type</th>
+              <th className="p-2 border">Type</th>
               <th className="p-2 border">Date Requested</th>
               <th className="p-2 border">Date of Appointment</th>
               <th className="p-2 border">Appointee</th>
@@ -78,7 +109,9 @@ export function AppointmentsTable({ appointments }) {
                   key={appointment.id}
                   className="odd:bg-white even:bg-gray-50"
                 >
-                  <td className="p-2 border">{appointment.workerType}</td>
+                  <td className="p-2 border">
+                    {getWorkerType(appointment.workerType)}
+                  </td>
                   <td className="p-2 border">
                     {new Date(
                       appointment.createdAt.seconds * 1000
