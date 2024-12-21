@@ -7,6 +7,7 @@ import { useUser } from "../../providers/UserProvider";
 import { RemarksForm } from "../../components/RemarksForm";
 
 import { createNotification } from "../../utils/notifications";
+import { getWorkerType } from "../../utils/globals";
 
 export default function AppointmentPage() {
   const { id } = useParams();
@@ -92,8 +93,8 @@ export default function AppointmentPage() {
           </Link>
         </div>
         <div className="mb-4">
-          <span className="font-semibold">Worker ID:</span>{" "}
-          {appointment.workerId}
+          <span className="font-semibold">Type:</span>{" "}
+          {getWorkerType(appointment.workerType)}
         </div>
         <div className="mb-4">
           <span className="font-semibold">Worker Type:</span>{" "}
