@@ -24,7 +24,8 @@ export const createAppointment = async (
   selectedDate,
   userId,
   fullname,
-  college
+  college,
+  isPhysicianAvailable = false // Default to false if not provided
 ) => {
   try {
     // Create a reference to the appointments collection
@@ -59,6 +60,7 @@ export const createAppointment = async (
       appointeeCollege: college,
       appointmentStatus: workerType == "Nurse" ? "Approved" : "Pending",
       createdAt: serverTimestamp(),
+      isPhysicianAvailable,
     });
 
     return { success: true, message: appointment.id };

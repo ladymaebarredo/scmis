@@ -118,6 +118,7 @@ export const offices = [
 ];
 
 export const nurseId = "0SzxW0YhpUV9io3Fids1bB6BCKp2";
+export const physicianId = "n09tpKqSvXTO2EDzTQUUqsGgVX53";
 
 export const getWorkerType = (worker) => {
   switch (worker) {

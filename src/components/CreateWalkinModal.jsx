@@ -4,6 +4,7 @@ import { createAppointment } from "../utils/appointment";
 import { createNotification } from "../utils/notifications";
 import { serverTimestamp } from "firebase/firestore";
 import { format, parseISO } from "date-fns";
+import { physicianId } from "../utils/globals";
 
 export function CreateWalkinModal({ onClose, revalidate }) {
   const { userData } = useUser();
@@ -15,6 +16,7 @@ export function CreateWalkinModal({ onClose, revalidate }) {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("09:00"); // Default time
   const [message, setMessage] = useState("");
+  const [isPhysicianAvailable, setIsPhysicianAvailable] = useState(false); // New state
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -48,10 +50,17 @@ export function CreateWalkinModal({ onClose, revalidate }) {
         formattedDate,
         studentId,
         name,
-        course
+        course,
+        isPhysicianAvailable // Include physician availability
       );
       if (res.success) {
         revalidate();
+        await createNotification(
+          userData.id,
+          physicianId, // Nurse ID
+          `${userData.lastname} requested a walk in appointment.`,
+          `/dashboard/appointments/${res.message}`
+        );
         onClose();
       } else {
         setError(res.message);
@@ -163,6 +172,19 @@ export function CreateWalkinModal({ onClose, revalidate }) {
             rows={4}
             className="w-full p-2 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        {/* Is Physician Available */}
+        <div className="mt-4 flex items-center">
+          <input
+            type="checkbox"
+            checked={isPhysicianAvailable}
+            onChange={(e) => setIsPhysicianAvailable(e.target.checked)}
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <label className="ml-2 block text-sm font-semibold text-gray-700">
+            Is Physician Available?
+          </label>
         </div>
 
         {/* Error Message */}
